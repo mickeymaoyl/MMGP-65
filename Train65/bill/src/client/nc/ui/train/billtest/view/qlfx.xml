@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+    <beans>
+	<!-- 继承单据管理型配置文件 -->
+	 <import resource="classpath:/nc/ui/mmgp/uif2/config/billmanage_pf2.xml" />     
+	 <import resource="classpath:/nc/ui/mmgp/uif2/config/billmanage_print.xml" />     
+	 <import resource="classpath:/nc/ui/mmgp/uif2/config/pf_maintainpower.xml" />
+	</beans>

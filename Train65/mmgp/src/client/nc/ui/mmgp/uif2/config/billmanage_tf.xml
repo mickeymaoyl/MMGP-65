@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<!-- 注意！！！此配置文件为拉单的单据专用，主要为了解决拉单时listInfoPnl（nc.ui.uif2.tangramlayout.CardLayoutToolbarPanel）被删除的问题 -->
+	<import resource="billmanage.xml" />
+
+
+	<bean id="listWithQueryArea" class="nc.ui.uif2.tangramlayout.node.HSNode">
+		<property name="left">
+			<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+				<property name="component" ref="queryArea" />
+			</bean>
+		</property>
+		<property name="right">
+			<bean class="nc.ui.uif2.tangramlayout.node.VSNode">
+				<property name="up">
+					<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+						<property name="component" ref="listInfoPnl" />
+					</bean>
+				</property>
+				<property name="down">
+					<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+						<property name="name" value="列表" />
+						<property name="component" ref="listView" />
+					</bean>
+				</property>
+				<property name="dividerLocation" value="30f" />
+			</bean>
+		</property>
+		<property name="dividerLocation">
+			<value>0.22f</value>
+		</property>
+	</bean>
+
+	<bean id="listWithOutQueryArea" class="nc.ui.uif2.tangramlayout.node.VSNode">
+		<property name="up">
+			<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+				<property name="component" ref="listInfoPnl" />
+			</bean>
+		</property>
+		<property name="down">
+			<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+				<property name="name" value="列表" />
+				<property name="component" ref="listView" />
+			</bean>
+		</property>
+		<property name="dividerLocation" value="30f" />
+	</bean>
+
+</beans>

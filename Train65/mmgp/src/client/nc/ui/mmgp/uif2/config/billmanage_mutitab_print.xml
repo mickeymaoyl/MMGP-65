@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 主子表，多页签打印 -->
+<!-- 每一个子表页签做一个打印模板，并且在默认模板分配的时候，nodekey必须指定为每一个页签的页签编码 -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<import resource="classpath:/nc/ui/mmgp/uif2/config/billmanage_print.xml" />
+
+
+	<!-- 列表界面打印 -->
+	<bean id="listNodekeyFactory" class="nc.ui.mmgp.uif2.actions.MMGPPrintNodeKeyFactory">
+		<property name="card" value="false" />
+		<property name="parent" ref="listView" />
+	</bean>
+
+	<bean id="listTemplatePreview" parent="listTemplatePreviewBase"
+		class="nc.ui.mmgp.uif2.actions.MMGPMutiTabPrintAction">
+		<property name="nodekeyFactory" ref="listNodekeyFactory" />
+	</bean>
+
+	<bean id="listTemplatePrint" parent="listTemplatePrintBase"
+		class="nc.ui.mmgp.uif2.actions.MMGPMutiTabPrintAction">
+		<property name="nodekeyFactory" ref="listNodekeyFactory" />
+	</bean>
+
+	<bean id="listOutputAction" parent="listOutputActionBase"
+		class="nc.ui.mmgp.uif2.actions.MMGPMutiTabOutputAction">
+		<property name="nodekeyFactory" ref="listNodekeyFactory" />
+	</bean>
+
+
+	<!-- 卡片界面打印 -->
+	<bean id="cardNodekeyFactory" class="nc.ui.mmgp.uif2.actions.MMGPPrintNodeKeyFactory">
+		<property name="card" value="true" />
+		<property name="parent" ref="billFormEditor" />
+	</bean>
+
+	<bean id="templatePreview" parent="templatePreviewBase"
+		class="nc.ui.mmgp.uif2.actions.MMGPMutiTabPrintAction">
+		<property name="nodekeyFactory" ref="cardNodekeyFactory" />
+	</bean>
+
+	<bean id="templatePrint" parent="templatePrintBase"
+		class="nc.ui.mmgp.uif2.actions.MMGPMutiTabPrintAction">
+		<property name="nodekeyFactory" ref="cardNodekeyFactory" />
+	</bean>
+
+	<bean id="outputAction" parent="outputActionBase"
+		class="nc.ui.mmgp.uif2.actions.MMGPMutiTabOutputAction">
+		<property name="nodekeyFactory" ref="cardNodekeyFactory" />
+	</bean>
+
+</beans>

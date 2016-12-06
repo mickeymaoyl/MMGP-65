@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">  
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"> 
+    <property name="location"> 
+      <value>C:\Work\WorkSpace-65\Train65\bill\src/test/resources/data/spring//spring.properties</value> 
+    </property> 
+  </bean>  
+  <bean class="nc.vo.pub.lang.UFDateTime" id="ufdatetime"> 
+    <constructor-arg index="0"> 
+      <value>${ufdatetime.constructor_args.0}</value> 
+    </constructor-arg>  
+    <constructor-arg index="1"> 
+      <null/> 
+    </constructor-arg> 
+  </bean>  
+  <bean class="nc.vo.pub.lang.UFDouble" id="ufdouble"> 
+    <constructor-arg index="0"> 
+      <list/> 
+    </constructor-arg>  
+    <constructor-arg index="1"> 
+      <value>${ufdouble.constructor_args.1}</value> 
+    </constructor-arg>  
+    <constructor-arg index="2"> 
+      <value>${ufdouble.constructor_args.2}</value> 
+    </constructor-arg>  
+    <property name="trimZero" value="${ufdouble.trimZero}"/> 
+  </bean>  
+  <bean class="nc.vo.pub.lang.UFDate" id="ufdate">
+    <constructor-arg index="0">
+      <value>${ufdate.constructor_args.0}</value>
+    </constructor-arg>
+    <constructor-arg index="1">
+      <null/>
+    </constructor-arg>
+    <constructor-arg index="2">
+      <value>${ufdate.constructor_args.2}</value>
+    </constructor-arg>
+  </bean>
+</beans>

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!-- 甘特图XML配置文件 -->
+<beans default-lazy-init="true">
+
+	<bean id="gantFormEditorBase" class="nc.ui.mmgp.flexgant.view.MMGPGantForm"
+		init-method="initUI">
+		<property name="gantChart" ref="gantChart" />
+		<property name="model" ref="manageAppModel" />
+		<property name="componentValueManager" ref="GantComponentValueStrategy" />
+	</bean>
+	
+	<bean id="gantFormEditor" parent="gantFormEditorBase">
+	</bean>
+	
+	<bean id="GantComponentValueStrategy" class="nc.ui.mmgp.flexgant.view.MMGPGantValueAdapter">
+		<property name="component" ref="gantChart" />
+	</bean>
+	
+	<bean id="gantChartBase" class="nc.ui.mmgp.flexgant.view.MMGPGantChart">
+		<constructor-arg index="0" ref="gantChartModel" />
+		<constructor-arg index="1" ref="columnModel" />
+		<property name="manageModel" ref="manageAppModel" />
+		<!-- <property name="gantRenderMap" ref="renderMap"/> -->
+		<!-- <property name="synchronizedMediator" ref="gantSynMediator"/> -->
+	</bean>
+
+	<bean id="gantChart" parent="gantChartBase" />
+
+	<bean id="gantChartModelBase" class="nc.ui.mmgp.flexgant.model.MMGPGantChartModel">
+		<constructor-arg ref="appGantContext" />
+		<property name="appTimelineObjectCreateStategy" ref="timelineObjectCreator" />
+	</bean>
+
+	<bean id="gantChartModel" parent="gantChartModelBase" />
+	<bean id="timelineObjectCreator"
+		class="nc.ui.mmgp.flexgant.view.timelineobject.MMGPDefaultTimelineObjectCreator">
+	</bean>
+
+	<bean id="appGantContextBase" class="nc.ui.mmgp.flexgant.model.MMGPGantContext"
+		init-method="init">
+		<property name="itemContainer" ref="gantItemContainer" />
+		<property name="initGantItems" ref="templateGantItems" />
+		<property name="loginContext" ref="context" />
+	</bean>
+	<bean id="appGantContext" parent="appGantContextBase" />
+
+	<bean id="gantItemContainer"
+		class="nc.ui.mmgp.flexgant.view.treetable.MMGPGantItemContainer">
+	</bean>
+
+
+	<!-- 甘特图左树列初始化，通过单据模板初始化 -->
+	<bean id="templateGantItemsBase" class="nc.ui.mmgp.flexgant.template.MMGPTemplateGantItems"
+		init-method="init">
+		<property name="templateContainer" ref="templateContainer" />
+	</bean>
+	<bean id="templateGantItems" parent="templateGantItemsBase" />
+
+	<!-- 模板容器，负责对模板的统一装载 -->
+	<bean id="templateContainer" class="nc.ui.uif2.editor.TemplateContainer"
+		init-method="load">
+		<property name="context" ref="context" />
+		<property name="nodeKeies" ref="nodekeys">
+		</property>
+	</bean>
+
+
+	<bean id="nodekeys" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<value>gant</value>
+			</list>
+		</constructor-arg>
+	</bean>
+
+
+	<bean id="columnModel"
+		class="nc.ui.mmgp.flexgant.view.treetable.MMGPBillTempletColumnModel"
+		init-method="init">
+		<constructor-arg ref="appGantContext" />
+		<property name="gantChartModel" ref="gantChartModel"></property>
+
+		<property name="userdefitemPreparator">
+			<bean
+				class="nc.ui.mmgp.flexgant.view.treetable.CompositeGantTableDataPrepare">
+				<property name="gantTableDataPrepares">
+					<!-- 自定义项物料辅助属性配置 -->
+					<list>
+						<ref bean="marAsstPreparator" />
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<!-- 甘特图数量精度处理的配置 示例 start -->
+	<bean id="gantNumScaleMediator"
+		class="nc.ui.mmgp.flexgant.scale.mediator.MMGPGantNumScaleMediator">
+		<property name="chartModel" ref="gantChartModel"></property>
+		<property name="context" ref="context" />
+	</bean>
+
+
+	<!-- 数据精度主单位 -->
+	<bean class="nc.ui.mmgp.uif2.scale.MMGPNumScaleBean">
+		<property name="numkeys">
+			<list>
+				<value>ninstallnum</value>
+				<value>ntestnum</value>
+				<value>ndemandnum</value>
+
+			</list>
+		</property>
+		<property name="unitkey" value="cunitid" />
+	</bean>
+
+	<!-- 甘特图数量精度处理的配置 end -->
+
+
+	<!-- 辅助属性及自定义项配置 示例start 目前只支持显示 -->
+	<!-- 物料辅助属性的配置 -->
+	<bean id="marAsstPreparator"
+		class="nc.ui.mmgp.flexgant.view.treetable.assistant.MMGPGantMarAssPrepator">
+		<!--<property name="model" ref="manageAppModel" /> -->
+		<property name="container" ref="userdefitemContainer" />
+		<property name="prefix" value="vfree" />
+		<property name="materialField" value="cmaterialvid" />
+		<!-- 以下四个为物料固定辅助属性，可以选择配置 -->
+		<property name="customerField" value="ccustomerid" />
+		<property name="projectField" value="cprojectid" />
+		<property name="supplierField" value="cvendorid" />
+		<property name="productorField" value="cproductorid" />
+	</bean>
+
+
+	<!-- 用户自定义项设置 -->
+	<bean id="userdefitemContainer" class="nc.ui.mmgp.uif2.userdefitem.MMGPUserDefItemContainer">
+		<property name="context" ref="context" />
+		<property name="params">
+			<list>
+				<bean class="nc.ui.uif2.userdefitem.QueryParam">
+					<property name="mdfullname" value="empmps.yg_masterplan_111" />
+				</bean>
+				<bean class="nc.ui.uif2.userdefitem.QueryParam">
+					<property name="mdfullname" value="empmps.yg_masterplan_b_111" />
+				</bean>
+
+				<bean class="nc.ui.uif2.userdefitem.QueryParam">
+					<property name="rulecode" value="materialassistant" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+
+	<!-- 自定义项配置 -->
+	<bean id="userdefitemlistPreparator"
+		class=" nc.ui.mmgp.flexgant.view.treetable.userdefitem.MMGPGantUserdefitemContainerPreparator">
+		<property name="container" ref="userdefitemContainer" />
+		<property name="params">
+			<list>
+				<bean class="nc.ui.uif2.editor.UserdefQueryParam">
+					<property name="mdfullname" value="empmps.yg_masterplan_b_111" />
+					<property name="pos" value="1" />
+					<property name="prefix" value="vbdef" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	<!-- 辅助属性及自定义项配置 end -->
+</beans>

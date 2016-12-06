@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!-- 管理型（列表卡片）模板，支持启用/停用 -->
+<beans default-lazy-init="false">
+	<import resource="classpath:/nc/ui/mmgp/uif2/config/billmanage2.xml" />
+
+	<bean id="listActions" class="nc.ui.mmgp.uif2.container.MMGPActionList">
+		<constructor-arg>
+			<list>
+				<ref bean="filterAction" />
+				<ref bean="nullaction" />
+				<ref bean="sealActionGroup" />
+				<ref bean="nullaction" />
+				<ref bean="listPrintActionGroup" />
+			</list>
+		</constructor-arg>
+		<property name="addActions" ref="listAddActions" />
+		<property name="insertActions" ref="listInsertActions" />
+	</bean>
+	<bean id="cardActions" class="nc.ui.mmgp.uif2.container.MMGPActionList">
+		<constructor-arg>
+			<list>
+				<ref bean="nullaction" />
+				<ref bean="sealActionGroup" />
+				<ref bean="nullaction" />
+				<ref bean="printActionGroup" />
+			</list>
+		</constructor-arg>
+		<property name="addActions" ref="cardAddActions" />
+		<property name="insertActions" ref="cardInsertActions" />
+	</bean>
+
+
+	<bean id="sealActionGroup" class="nc.funcnode.ui.action.GroupAction">
+		<property name="code" value="EnableGroup" />
+		<property name="actions">
+			<list>
+				<ref bean="enableAction" />
+				<ref bean="diableAction" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="enableActionBase" class="nc.ui.mmgp.uif2.actions.MMGPEnableAction">
+		<property name="model" ref="manageAppModel"></property>
+		<property name="operateCode" value="enable" />
+		<property name="resourceCode" ref="resourceCode" />
+		<!-- <property name="exceptionHandler" ref="exceptionHandler"></property> -->
+	</bean>
+	<bean id="enableAction" parent="enableActionBase"></bean>
+
+	<bean id="diableActionBase" class="nc.ui.mmgp.uif2.actions.MMGPDisableAction">
+		<property name="model" ref="manageAppModel"></property>
+		<property name="operateCode" value="disable" />
+		<property name="resourceCode" ref="resourceCode" />
+		<!-- <property name="exceptionHandler" ref="exceptionHandler"></property> -->
+		<!-- <property name="refreshAction" ref="refreshAction"></property> -->
+	</bean>
+	<bean id="diableAction" parent="diableActionBase"></bean>
+
+	<bean id="filterAction" class="nc.funcnode.ui.action.MenuAction">
+		<property name="code" value="filter"></property>
+		<property name="name">
+			<bean class="nc.ui.uif2.I18nFB ">
+				<property name="resDir" value="common" />
+				<property name="defaultValue" value="过滤" />
+				<property name="resId" value="UCH069" />
+			</bean>
+		</property>
+		<property name="actions">
+			<list>
+				<ref bean="showSealAction" />
+			</list>
+		</property>
+	</bean>
+	<bean id="showSealAction" class="nc.ui.uif2.actions.ShowDisableDataAction">
+		<property name="model" ref="manageAppModel"></property>
+		<property name="dataManager" ref="modelDataManager"></property>
+	</bean>
+	
+	<!--	支持启用/停用 的DataManager控制类-->
+	<bean id="needSealEnableMediator" class="nc.ui.mmgp.uif2.mediator.NeedSealEnableMediator">
+		<property name="needSeal" ref="modelDataManager"></property>
+	</bean>
+	
+</beans>

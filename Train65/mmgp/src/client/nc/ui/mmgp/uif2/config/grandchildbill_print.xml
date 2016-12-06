@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<bean id="listTemplatePreviewBase" class="nc.ui.pubapp.uif2app.actions.MetaDataBasedPrintAction">
+		<property name="model" ref="mainModel"></property>
+		<property name="actioncode" value="TempPreview"/>
+		<property name="preview" value="true" />
+		<property name="nodeKey" value="card"></property>
+		<property name="operateCode" ref="printOperateCode" />
+		<property name="resourceCode" ref="resourceCode" />
+		<property name="beforePrintDataProcess" ref="beforePrintDataProcess"></property>
+	</bean>
+	<bean id="listTemplatePreview" parent="listTemplatePreviewBase"></bean>
+
+	<bean id="listTemplatePrintBase" class="nc.ui.pubapp.uif2app.actions.MetaDataBasedPrintAction">
+		<property name="model" ref="mainModel"></property>
+		<property name="actioncode" value="TempPrint"/>
+		<property name="preview" value="false" />
+		<property name="nodeKey" value="card"></property>
+		<property name="operateCode" ref="printOperateCode" />
+		<property name="resourceCode" ref="resourceCode" />
+		<property name="beforePrintDataProcess" ref="beforePrintDataProcess"></property>
+	</bean>
+	<bean id="listTemplatePrint" parent="listTemplatePrintBase"></bean>
+
+	<bean id="listOutputActionBase" class="nc.ui.pubapp.uif2app.actions.OutputAction">
+		<property name="model" ref="mainModel"></property>
+		<property name="nodeKey" value="card"></property>
+		<property name="operateCode" ref="printOperateCode" />
+		<property name="resourceCode" ref="resourceCode" />
+		<property name="beforePrintDataProcess" ref="beforePrintDataProcess"></property>
+	</bean>
+	<bean id="listOutputAction" parent="listOutputActionBase"></bean>
+
+	<bean id="templatePreviewBase" class="nc.ui.pubapp.uif2app.actions.MetaDataBasedPrintAction">
+		<property name="model" ref="mainModel"></property>
+		<property name="actioncode" value="TempPreview"/>
+		<property name="preview" value="true" />
+		<property name="nodeKey" value="card"></property>
+		<property name="operateCode" ref="printOperateCode" />
+		<property name="resourceCode" ref="resourceCode" />
+		<property name="beforePrintDataProcess" ref="beforePrintDataProcess"></property>
+	</bean>
+	<bean id="templatePreview" parent="templatePreviewBase"></bean>
+
+	<bean id="templatePrintBase" class="nc.ui.pubapp.uif2app.actions.MetaDataBasedPrintAction">
+		<property name="model" ref="mainModel"></property>
+		<property name="actioncode" value="TempPrint"/>
+		<property name="preview" value="false" />
+		<property name="nodeKey" value="card"></property>
+		<property name="operateCode" ref="printOperateCode" />
+		<property name="resourceCode" ref="resourceCode" />
+		<property name="beforePrintDataProcess" ref="beforePrintDataProcess"></property>
+	</bean>
+	<bean id="templatePrint" parent="templatePrintBase"></bean>
+
+	<bean id="outputActionBase" class="nc.ui.pubapp.uif2app.actions.OutputAction">
+		<property name="model" ref="mainModel"></property>
+		<property name="nodeKey" value="card"></property>
+		<property name="operateCode" ref="printOperateCode" />
+		<property name="resourceCode" ref="resourceCode" />
+		<property name="beforePrintDataProcess" ref="beforePrintDataProcess"></property>
+	</bean>
+	<bean id="outputAction" parent="outputActionBase"></bean>
+
+	<!-- 精度处理类 -->
+	<bean id="beforePrintDataProcessBase"
+		class="nc.ui.mmgp.uif2.actions.print.MMGPBeforePrintDataProcess">
+		<property name="model" ref="mainModel"></property>
+	</bean>
+	<bean id="beforePrintDataProcess" parent="beforePrintDataProcessBase"></bean>
+
+	<!-- 打印权限操作编码 -->
+	<bean id="printOperateCode" class="java.lang.String">
+		<constructor-arg value="" />
+	</bean>
+
+	<!-- 配置懒加载，解决列表界面打印时表体数据未加载的问题 -->
+	<bean id="lasilyLodadMediator" parent="lasilyLodadMediatorBase">
+		<property name="lazilyLoadSupporter">
+			<list>
+				<ref bean="lazyActions" />
+				<bean class="nc.ui.pubapp.uif2app.lazilyload.CardPanelLazilyLoad">
+					<property name="billform" ref="billFormEditor" />
+				</bean>
+				<bean class="nc.ui.pubapp.uif2app.lazilyload.ListPanelLazilyLoad">
+					<property name="listView" ref="listView" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="lazyActionsBase" class="nc.ui.pubapp.uif2app.lazilyload.ActionLazilyLoad">
+		<property name="model" ref="mainModel" />
+		<property name="actionList">
+			<list>
+				<ref bean="listTemplatePrint" />
+				<ref bean="listTemplatePreview" />
+				<ref bean="listOutputAction" />
+			</list>
+		</property>
+	</bean>
+	<bean id="lazyActions" parent="lazyActionsBase"></bean>
+
+</beans>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!-- 管理型（列表卡片）模板，支持主子表、多子表，单表头 -->
+<!-- 用了新的查询Action -->
+<beans default-lazy-init="false">
+
+	<!-- 继承标准管理型配置文件 -->
+	<import resource="classpath:/nc/ui/mmgp/uif2/config/billmanage2.xml" />
+
+	<!-- 应用服务类，负责进行模型操作的处理 -->
+	<bean id="manageModelServiceBase" class="nc.ui.mmgp.uif2.service.MMGPDocModelService">
+		<!-- 修改为upm文件中配置的接口名称，前提是实现了IMMGPCmnOperateService接口 -->
+		<property name="manageServiceItf" value="nc.itf.mmgp.uif2.IMMGPCmnOperateBPService"></property>
+	</bean>
+
+</beans>

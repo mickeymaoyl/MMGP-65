@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="gbk"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<bean id="funcregister" class="nc.pubapp.pade.funcmodel.vo.FuncRegister"><property name="bmf_path" value="bill\METADATA\billtest.bmf"/>
+<property name="busiActiveList">
+<list></list>
+</property>
+<property name="cfunid" value="0001ZZ1000000000HI43"/>
+<property name="class_name" value="nc.ui.pubapp.uif2app.ToftPanelAdaptorEx"/>
+<property name="dr" value="0"/>
+<property name="fun_name" value="单据测试"/>
+<property name="fun_property" value="0"/>
+<property name="funcRegisterButtonList">
+<list></list>
+</property>
+<property name="funcRegisterParamList">
+<list><bean class="nc.pubapp.pade.funcmodel.vo.FuncRegisterParam"><property name="dr" value="0"/>
+<property name="paramname" value="BeanConfigFilePath"/>
+<property name="paramvalue" value="nc/ui/train/billtest/ace/view/Billtest_config.xml"/>
+<property name="parentid" value="0001ZZ1000000000HI43"/>
+<property name="pk_param" value="0001ZZ1000000000HI44"/>
+<property name="ts" value="2016-11-30 10:19:20"/>
+</bean>
+</list>
+</property>
+<property name="funcode" value="LX101030"/>
+<property name="funnode_path" value="bill\designmodel\ace\client\LX101030.fnf"/>
+<property name="funtype" value="0"/>
+<property name="isbuttonpower" value="false"/>
+<property name="isenable" value="true"/>
+<property name="isfunctype" value="false"/>
+<property name="menuModelFilePath" value="bill/designmodel/funcmodel/billtest/menuitemregis/LX101030.menu"/>
+<property name="metaDataID" value="a2c89e28-b532-49dd-8f6c-08418e61fc06"/>
+<property name="moduleName" value="train"/>
+<property name="orgtypecode" value="PURCHASEORGTYPE00000"/>
+<property name="own_module" value="TR10"/>
+<property name="pageList">
+<list></list>
+</property>
+<property name="parent_id" value="1001ZZ1000000000YMWZ"/>
+<property name="pk_group" value="~"/>
+<property name="ts" value="2016-11-30 10:19:20"/>
+<property name="uif2model_path" value="bill\designmodel\ace\uif2model\LX101030.umf"/>
+</bean>
+
+</beans>

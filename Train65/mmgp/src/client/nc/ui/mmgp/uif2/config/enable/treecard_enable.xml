@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <import resource="classpath:/nc/ui/mmgp/uif2/config/treecard.xml" />
+    <import resource="classpath:/nc/ui/mmgp/uif2/config/enable/treecard_enable_section.xml" />
+</beans>

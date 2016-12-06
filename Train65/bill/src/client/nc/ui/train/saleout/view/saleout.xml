@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<!-- 继承单据管理型配置文件 -->
+	 <import resource="classpath:/nc/ui/mmgp/uif2/config/billmanage_pf2.xml" />     
+	 <import resource="classpath:/nc/ui/mmgp/uif2/config/billmanage_print.xml" />     
+	 <import resource="classpath:/nc/ui/mmgp/uif2/config/pf_maintainpower.xml" />
+
+      <!-- 单据类型 -->
+		<bean id="billType" class="java.lang.String">
+		<constructor-arg type="java.lang.String" value="TR12" />
+	    </bean>
+	        
+	    <bean id="rowNoKey" class="java.lang.String">
+		   <constructor-arg type="java.lang.String" value="rowno" />
+	    </bean>
+	    
+	    <!-- 表体是否自动增行 -->
+	     <bean id="billFormEditor" parent="billFormEditorBase">
+	  		  <property name="autoAddLine" value="true" />
+	    </bean>
+	    
+	    
+	
+	
+	<bean id="actions" class="nc.ui.mmgp.uif2.container.MMGPActionList">
+		<constructor-arg>
+			<list>
+				<ref bean="addMenuGroup" />
+				<ref bean="editAction" />
+				<ref bean="deleteAction" />
+				<ref bean="nullaction" />
+				<ref bean="queryAction" />
+				<ref bean="refreshAction" />
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="addMenuGroup" class="nc.ui.pubapp.uif2app.actions.AddMenuAction" init-method="initUI">
+			<!-- 当前单据的单据类型 -->
+			<property name="billType" value="TR12" />
+				<!-- 当前单据的所有上游单据的一个全集 -->
+			<property name="actions">
+			<list>
+			<ref bean="addAction" />
+			
+			<ref bean="addFromSaleAction" />
+			</list>
+			</property>
+			<property name="model" ref="manageAppModel" />
+			<!--  
+			<property name="pfAddInfoLoader" ref="pfAddInfoLoader"></property>
+			-->
+	</bean>
+	
+	<bean id="addFromSaleAction" class="nc.ui.train.saleout.aciton.AddSaleOrder">									
+		<!-- 来源单据类型编码 -->								
+		<property name="sourceBillType" value="TR11" />								
+		<property name="sourceBillName" value="销售订单测试" />								
+		<property name="model" ref="manageAppModel" />								
+		<property name="editor" ref="billFormEditor" />								
+		<property name="transferViewProcessor" ref="transferProcessorforSale" />								
+		<property name="flowBillType" value="false" />								
+	</bean>									
+										
+		<!-- 转单 -->									
+		<bean name="transferProcessorforSale" class="nc.ui.pubapp.billref.dest.TransferViewProcessor">									
+			<property name="list" ref="listView" />								
+			<property name="cardActionContainer" ref="cardActionsContainer" />								
+			<property name="actionContainer" ref="listActionsContainer" />								
+			<property name="transferLogic" ref="transferLogicforMo" />								
+			<property name="billForm" ref="billFormEditor" />								
+			<property name="cancelAction" ref="cancelAction" />								
+			<property name="saveAction" ref="saveAction" />								
+		</bean>									
+											
+		<!-- 设定卡片画面的一些新增默认值，画面的可编辑性 -->									
+		<bean name="transferLogicforMo" class="nc.ui.train.saleout.aciton.SaleOutTrans">									
+			<property name="billForm" ref="billFormEditor" />								
+		</bean>									
+	    
+</beans>

@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<!-- 单表体方式的模板 -->
+<beans default-lazy-init="true">
+	<!-- 环境变量 -->
+	<bean id="context" class="nc.vo.uif2.LoginContext"></bean>
+
+	<!-- 应用服务类，负责进行模型操作的处理 -->
+	<bean id="batchModelServiceBase" class="nc.ui.mmgp.uif2.service.MMGPSmartBatchAppModelService">
+		<property name="context" ref="context"></property>
+		<!-- 修改为upm文件中配置的接口名称，前提是实现了ISmartService接口 -->
+		<property name="serviceItf" value="nc.itf.mmgp.uif2.IMMGPSmartService" />
+	</bean>
+
+	<bean id="batchModelService" parent="batchModelServiceBase" />
+
+	<!-- 对象转换器工厂，由此获取操作对象的特征信息 -->
+	<!-- 对于有元数据的VO，可以使用下面的配置 -->
+	<bean id="boadatorfactory" class="nc.vo.bd.meta.BDObjectAdpaterFactory" />
+
+	<!-- 批量操作应用模型 -->
+	<bean id="batchBillTableModelBase" class="nc.ui.mmgp.uif2.model.MMGPBatchBillTableModel">
+		<property name="context" ref="context"></property>
+		<property name="service" ref="batchModelService"></property>
+		<property name="businessObjectAdapterFactory" ref="boadatorfactory"></property>
+
+	</bean>
+
+	<bean id="queryRefFilterManager" class="nc.ui.mmgp.uif2.query.MMGPCommonQueryRefFilterManager" />
+
+	<bean id="batchBillTableModel" parent="batchBillTableModelBase"></bean>
+
+	<!-- 数据模型管理器，主要负责各种方式的模型初始化 -->
+	<!-- 如果有界面中有通用的查询Action要引用此bean，此bean必须实现IAppModelQueryDataManager接口 -->
+	<bean id="modelDataManagerBase" class="nc.ui.mmgp.uif2.model.MMGPBatchModelDataManager">
+		<property name="model" ref="batchBillTableModel"></property>
+		<property name="service" ref="batchModelService"></property>
+		<property name="qryWhenInit" value="false"></property>
+	</bean>
+
+	<bean id="modelDataManager" parent="modelDataManagerBase"></bean>
+
+	<!-- 权限资源编码，需要权限控制的节点请设值,默认为空 -->
+	<bean id="resourceCode" class="java.lang.String">
+		<constructor-arg type="java.lang.String" value="" />
+	</bean>
+
+	<bean id="userdefitemContainer" class="nc.ui.mmgp.uif2.userdefitem.MMGPUserDefItemContainer">
+		<property name="context" ref="context" />
+		<property name="params">
+			<list>
+				<bean class="nc.ui.uif2.userdefitem.QueryParam" />
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 远程调用合并 -->
+	<bean id="remoteCallCombinatorCaller" class="nc.ui.mmgp.uif2.MMGPUIF2RemoteCallCombinatorCaller">
+	</bean>
+
+
+	<!-- ClosingListener -->
+	<bean id="ClosingListener" class="nc.ui.uif2.FunNodeClosingHandler">
+		<property name="model" ref="batchBillTableModel" />
+		<property name="saveaction" ref="saveAction" />
+		<property name="cancelaction" ref="cancelAction" />
+	</bean>
+
+	<!-- 界面元素 ########################################################### -->
+
+	<!-- 编辑页签控件 -->
+	<bean id="listBase" class="nc.ui.mmgp.uif2.view.MMGPBatchBillTable"
+		init-method="initUI">
+		<property name="model" ref="batchBillTableModel"></property>
+		<property name="moreRowEdit" value="true" />
+		<property name="isBodyAutoAddLine" value="false"></property>
+		<property name="bodyMultiSelectEnable" value="true"></property>
+
+		<property name="userdefitemPreparator">
+			<bean class="nc.ui.mmgp.uif2.view.MMGPUserdefitemContainerPreparator">
+				<property name="templateContainer" ref="templateContainer" />
+				<property name="container" ref="userdefitemContainer" />
+				<property name="isSingleBody" ref="isSingleBody" />
+				<property name="params">
+					<list>
+						<bean class="nc.ui.uif2.editor.UserdefQueryParam">
+							<property name="pos" value="0" />
+							<property name="prefix" value="vdef" />
+						</bean>
+					</list>
+				</property>
+			</bean>
+		</property>
+
+	</bean>
+	
+	<bean id="isSingleBody" class="java.lang.Boolean">
+		<constructor-arg value="true" />
+	</bean>
+	
+	<bean id="list" parent="listBase" />
+
+	<bean id="templateContainer" class="nc.ui.uif2.editor.TemplateContainer"
+		init-method="load">
+		<property name="context" ref="context"></property>
+	</bean>
+
+
+	<bean id="orgPanel" class="nc.ui.mmgp.uif2.view.MMGPOrgPanel"
+		init-method="initUI">
+		<property name="model">
+			<ref bean="batchBillTableModel" />
+		</property>
+		<property name="dataManager">
+			<ref bean="modelDataManager" />
+		</property>
+		<!-- <property name="labelName"> -->
+		<!-- <bean class="nc.ui.uif2.I18nFB"> -->
+		<!-- <property name="resDir" value="common"></property> -->
+		<!-- <property name="defaultValue" value="业务单元"></property> -->
+		<!-- <property name="resId" value="UC000-000003"></property> -->
+		<!-- </bean> -->
+		<!-- </property> -->
+	</bean>
+	<bean id="layoutRoot" class="nc.ui.uif2.tangramlayout.node.VSNode">
+		<property name="up">
+			<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+				<property name="component" ref="orgPanel"></property>
+			</bean>
+		</property>
+		<property name="down">
+			<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+				<property name="name" value="卡片" />
+				<property name="component" ref="list" />
+			</bean>
+		</property>
+		<property name="dividerLocation" value="30f"></property>
+
+	</bean>
+
+	<!-- 界面布局总装########################################################### -->
+	<bean id="containerBaseCommon" class="nc.ui.mmgp.uif2.container.MMGPTangramContainer"
+		init-method="initUI">
+		<property name="tangramLayoutRoot" ref="layoutRoot">
+		</property>
+
+		<property name="actions">
+			<list>
+				<ref bean="addAction" />
+				<ref bean="editAction" />
+				<ref bean="delAction" />
+				<ref bean="nullaction" />
+				<ref bean="queryAction" />
+				<ref bean="refreshAction" />
+				<ref bean="nullaction" />
+				<ref bean="directPrintAction" />
+			</list>
+		</property>
+		<property name="editActions">
+			<list>
+				<ref bean="addAction" />
+				<ref bean="delAction" />
+				<ref bean="nullaction" />
+				<ref bean="saveAction" />
+				<ref bean="nullaction" />
+				<ref bean="cancelAction" />
+			</list>
+		</property>
+
+		<property name="model" ref="batchBillTableModel" />
+
+		<property name="insertActions" ref="initInsertAction" />
+		<property name="addActions" ref="initAddAction" />
+		<property name="actionsOnDevelopMode">
+			<list>
+			</list>
+		</property>
+	</bean>
+	<bean id="containerBase" parent="containerBaseCommon">
+	</bean>
+	<bean id="container" parent="containerBase" />
+	<!-- 动态增加按钮 -->
+	<bean id="initInsertActionBase" class="nc.ui.mmgp.uif2.container.InsertActions">
+	</bean>
+	<bean id="initInsertAction" parent="initInsertActionBase">
+	</bean>
+	<bean id="initAddActionBase" class="nc.ui.mmgp.uif2.container.AddActions">
+	</bean>
+	<bean id="initAddAction" parent="initAddActionBase">
+	</bean>
+
+	<!-- Actions ########################################################### -->
+
+	<bean id="addAction" class="nc.ui.mmgp.uif2.actions.batch.MMGPBatchAddLineAction">
+		<property name="model" ref="batchBillTableModel" />
+		<property name="interceptor" ref="addInterceptor" />
+	</bean>
+	<bean id="addInterceptorBase"
+		class="nc.ui.pubapp.uif2app.actions.interceptor.CompositeActionInterceptor">
+		<property name="interceptors">
+			<list>
+				<ref bean="checkActionEnableInOrgNode" />
+			</list>
+		</property>
+	</bean>
+	<bean id="addInterceptor" parent="addInterceptorBase"></bean>
+	
+	<bean id="editActionBase" class="nc.ui.mmgp.uif2.actions.batch.MMGPBatchEditAction">
+		<property name="model" ref="batchBillTableModel" />
+		<property name="interceptor" ref="editInterceptor"></property>
+		<property name="orgPanel" ref="orgPanel" />
+	</bean>
+	<bean id="editAction" parent="editActionBase"></bean>
+	<!-- 编辑interceptor -->
+	<bean id="editInterceptorBase"
+		class="nc.ui.pubapp.uif2app.actions.interceptor.CompositeActionInterceptor">
+		<property name="interceptors">
+			<list>
+				<ref bean="manageableInterceptor" />
+				<ref bean="editDataPermissionInterceptor" />
+				<ref bean="checkActionEnableInOrgNode" />
+			</list>
+		</property>
+	</bean>
+	<bean id="editInterceptor" parent="editInterceptorBase"></bean>
+
+	<bean id="delActionBase" class="nc.ui.mmgp.uif2.actions.batch.MMGPBatchDelLineAction">
+		<property name="model" ref="batchBillTableModel" />
+		<property name="batchBillTable" ref="list" />
+		<property name="interceptor" ref="deleteInterceptor"></property>
+	</bean>
+	<bean id="delAction" parent="delActionBase"></bean>
+
+	<!-- 删除Interceptor -->
+	<bean id="deleteInterceptorBase"
+		class="nc.ui.pubapp.uif2app.actions.interceptor.CompositeActionInterceptor">
+		<property name="interceptors">
+			<list>
+				<ref bean="manageableInterceptor" />
+				<ref bean="deleteDataPermissionInterceptor" />
+				<ref bean="checkActionEnableInOrgNode" />
+			</list>
+		</property>
+	</bean>
+	<bean id="deleteInterceptor" parent="deleteInterceptorBase"></bean>
+
+
+
+	<bean id="saveActionBase" class="nc.ui.uif2.actions.batch.BatchSaveAction">
+		<property name="model" ref="batchBillTableModel" />
+		<property name="editor" ref="list" />
+		<property name="validationService" ref="saveValidation" />
+	</bean>
+	<bean name="saveValidationBase" class="nc.ui.mmgp.uif2.validation.MMGPCompositeValidation">
+		<property name="validators">
+			<list>
+				<bean class="nc.ui.mmgp.uif2.validation.MMGPBatchNotNullValidation">
+					<property name="billForm" ref="list" />
+				</bean>
+				<ref bean="batchBlankFilterValidator" />
+			</list>
+		</property>
+	</bean>
+
+	<!-- 批修改空行过滤检验 -->
+	<bean id="batchBlankFilterValidatorBase"
+		class="nc.ui.mmgp.uif2.validation.MMGPBatchBlankValidateService">
+		<property name="blankChildrenFilter" ref="batchBlankFilter"></property>
+		<property name="editor" ref="list"></property>
+	</bean>
+	<bean id="batchBlankFilterValidator" parent="batchBlankFilterValidatorBase"></bean>
+
+	<!-- 批修改空行过滤 -->
+	<bean id="batchBlankFilterBase"
+		class="nc.ui.pubapp.uif2app.view.value.WholeFieldBlankChildrenFilter">
+		<property name="exceptFields">
+			<list>
+			</list>
+		</property>
+	</bean>
+	<bean id="batchBlankFilter" parent="batchBlankFilterBase"></bean>
+
+	<bean name="saveValidation" parent="saveValidationBase">
+	</bean>
+	<bean id="saveAction" parent="saveActionBase">
+	</bean>
+	<bean id="cancelActionBase" class="nc.ui.mmgp.uif2.actions.batch.MMGPBatchCancelAction">
+		<property name="model" ref="batchBillTableModel" />
+		<property name="editor" ref="list" />
+	</bean>
+
+	<bean id="cancelAction" parent="cancelActionBase"></bean>
+
+	<bean id="refreshActionBase" class="nc.ui.mmgp.uif2.actions.batch.MMGPBatchRefreshAction">
+		<property name="model" ref="batchBillTableModel" />
+		<property name="dataManager" ref="modelDataManager" />
+	</bean>
+
+	<bean id="refreshAction" parent="refreshActionBase" />
+
+	<!-- 查询相关 -->
+	<bean id="queryTemplateContainer" class="nc.ui.uif2.editor.QueryTemplateContainer">
+		<property name="context" ref="context"></property>
+	</bean>
+	<bean id="qryCondInitializerBase"
+		class="nc.ui.mmgp.uif2.query.MMGPCommonQueryConditionInitializer">
+		<property name="orgFilterList" ref="queryPanelFilterByOrgFields" />
+		<property name="refFilterManager" ref="queryRefFilterManager" />
+		<property name="isOrgFilteredByPermission" ref="isQueryOrgFilteredByPermission" />
+	</bean>
+	<bean id="qryCondInitializer" parent="qryCondInitializerBase">
+	</bean>
+
+	<bean id="isQueryOrgFilteredByPermission" class="java.lang.Boolean">
+		<constructor-arg value="true" />
+	</bean>
+
+	<bean id="queryPanelFilterByOrgFields" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+			</list>
+		</constructor-arg>
+	</bean>
+	<!-- 查询按钮 -->
+	<bean id="queryActionBase" class="nc.ui.mmgp.uif2.actions.MMGPQueryAction2">
+		<property name="model" ref="batchBillTableModel" />
+		<property name="dataManager" ref="modelDataManager" />
+		<property name="templateContainer" ref="queryTemplateContainer" />
+		<property name="qryCondDLGInitializer" ref="qryCondInitializer"></property>
+	</bean>
+	<bean id="queryAction" parent="queryActionBase"></bean>
+	<!-- 直接打印 -->
+	<bean id="directPrintActionBase"
+		class="nc.ui.mmgp.uif2.actions.batch.MMGPBatchDirectPrintAction">
+		<property name="model" ref="batchBillTableModel" />
+		<property name="editor" ref="list" />
+	</bean>
+
+	<bean id="directPrintAction" parent="directPrintActionBase">
+
+	</bean>
+
+	<bean id="nullaction" class="nc.funcnode.ui.action.SeparatorAction" />
+
+	<!-- 组织切换设置参照组织过滤mediator -->
+	<bean id="orgChangeMediator"
+		class="nc.ui.mmgp.uif2.mediator.org.BillCardPanelEditorChangedMediator">
+		<property name="model" ref="batchBillTableModel"></property>
+		<property name="billCardPanelEditor" ref="list"></property>
+	</bean>
+
+	<!-- 组织切换为空mediator -->
+	<bean id="orgChangeNullValueMediator"
+		class="nc.ui.mmgp.uif2.mediator.org.BatchOrgChangedNullValueMediator">
+		<property name="model" ref="batchBillTableModel"></property>
+	</bean>
+
+	<bean id="numScaleMediator" class="nc.ui.mmgp.uif2.scale.mediator.MMGPCardNumScaleMediator">
+		<property name="editor" ref="list" />
+		<property name="context" ref="context" />
+	</bean>
+
+	<!-- 数据组织权限控制拦截器 -->
+	<bean id="manageableInterceptor"
+		class="nc.ui.mmgp.uif2.actions.batch.interceptor.MMGPBatchManageableInterceptor">
+		<property name="model" ref="batchBillTableModel"></property>
+	</bean>
+
+	<!-- 编辑数据权限拦截器 -->
+	<bean id="editDataPermissionInterceptor"
+		class="nc.ui.mmgp.uif2.actions.batch.interceptor.MMGPBatchDataPermissionInterceptor">
+		<property name="model" ref="batchBillTableModel"></property>
+		<property name="operateCode" value="edit"></property>
+		<property name="resourceCode" ref="resourceCode"></property>
+	</bean>
+	
+	<!-- 操作前组织面板停止编辑，并且校验组织级节点是否选择的组织 -->
+	<bean id="checkActionEnableInOrgNode"
+		class="nc.ui.mmgp.uif2.actions.batch.interceptor.MMGPBatchCheckActionEnableInOrgNode">
+		<property name="orgPanel" ref="orgPanel" />
+		<property name="context" ref="context" />
+	</bean>
+
+	<!-- 删除数据权限拦截器 -->
+	<bean id="deleteDataPermissionInterceptor"
+		class="nc.ui.mmgp.uif2.actions.batch.interceptor.MMGPBatchDataPermissionInterceptor">
+		<property name="model" ref="batchBillTableModel"></property>
+		<property name="operateCode" value="delete"></property>
+		<property name="resourceCode" ref="resourceCode"></property>
+	</bean>
+</beans>

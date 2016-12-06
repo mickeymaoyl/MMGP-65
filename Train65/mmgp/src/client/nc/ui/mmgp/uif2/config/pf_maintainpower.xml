@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<!-- 删除权限校验 -->
+	<bean id="deleteMaintainpowerMediator"
+		class="nc.ui.mmgp.uif2.mediator.power.MMGPBpMaintainPowerValidateMediator"
+		init-method="init">
+		<property name="action" ref="deleteAction"></property>
+		<property name="operateCode" value="delete"></property>
+		<property name="resourceCode" ref="resourceCode"></property>
+		<property name="context" ref="context"></property>
+	</bean>
+
+	<!-- 提交权限校验 -->
+	<bean id="sendApproveMaintainpowerMediator"
+		class="nc.ui.mmgp.uif2.mediator.power.MMGPBpMaintainPowerValidateMediator"
+		init-method="init">
+		<property name="action" ref="sendApproveAction"></property>
+		<property name="operateCode" value="commit"></property>
+		<property name="resourceCode" ref="resourceCode"></property>
+		<property name="context" ref="context"></property>
+	</bean>
+
+	<!-- 收回权限校验 -->
+	<bean id="unsendApproveMaintainpowerMediator"
+		class="nc.ui.mmgp.uif2.mediator.power.MMGPBpMaintainPowerValidateMediator"
+		init-method="init">
+		<property name="action" ref="unsendApproveAction"></property>
+		<property name="operateCode" value="uncommit"></property>
+		<property name="resourceCode" ref="resourceCode"></property>
+		<property name="context" ref="context"></property>
+	</bean>
+
+	<!-- 审核权限校验 -->
+	<bean id="approveMaintainpowerMediator"
+		class="nc.ui.mmgp.uif2.mediator.power.MMGPBpMaintainPowerValidateMediator"
+		init-method="init">
+		<property name="action" ref="approveAction"></property>
+		<property name="operateCode" value="approve"></property>
+		<property name="resourceCode" ref="resourceCode"></property>
+		<property name="context" ref="context"></property>
+	</bean>
+
+	<!-- 取消审核权限校验 -->
+	<bean id="unApproveMaintainpowerMediator"
+		class="nc.ui.mmgp.uif2.mediator.power.MMGPBpMaintainPowerValidateMediator"
+		init-method="init">
+		<property name="action" ref="unApproveAction"></property>
+		<property name="operateCode" value="unapprove"></property>
+		<property name="resourceCode" ref="resourceCode"></property>
+		<property name="context" ref="context"></property>
+	</bean>
+
+</beans>

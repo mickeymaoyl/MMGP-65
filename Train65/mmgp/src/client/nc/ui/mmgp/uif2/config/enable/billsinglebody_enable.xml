@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<import resource="classpath:/nc/ui/mmgp/uif2/config/billsinglebody.xml" />
+
+	<bean id="container" parent="containerBase">
+		<property name="actions">
+			<list>
+				<ref bean="addAction" />
+				<ref bean="editAction" />
+				<ref bean="delAction" />
+				<ref bean="nullaction" />
+				<ref bean="queryAction" />
+				<ref bean="refreshAction" />
+				<ref bean="filterAction" />
+				<ref bean="nullaction" />
+				<ref bean="sealActionGroup" />
+				<ref bean="nullaction" />
+				<ref bean="directPrintAction" />
+			</list>
+		</property>
+	</bean>
+
+
+	<bean id="sealActionGroup" class="nc.funcnode.ui.action.GroupAction">
+		<property name="code" value="EnableGroup" />
+		<property name="actions">
+			<list>
+				<ref bean="enableAction" />
+				<ref bean="diableAction" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="enableActionBase" class="nc.ui.mmgp.uif2.actions.batch.MMGPBatchEnableAction">
+		<property name="model" ref="batchBillTableModel"></property>
+		<property name="operateCode" value="enable"></property>
+		<property name="resourceCode" ref="resourceCode" />
+		<property name="interceptor" ref="enableInterceptor"></property>
+	</bean>
+	<bean id="enableAction" parent="enableActionBase"></bean>
+
+	<!-- 启用interceptor -->
+	<bean id="enableInterceptorBase"
+		class="nc.ui.pubapp.uif2app.actions.interceptor.CompositeActionInterceptor">
+		<property name="interceptors">
+			<list>
+				<ref bean="manageableInterceptor" />
+				<ref bean="checkActionEnableInOrgNode"/>
+			</list>
+		</property>
+	</bean>
+	<bean id="enableInterceptor" parent="enableInterceptorBase"></bean>
+
+	<bean id="diableActionBase" class="nc.ui.mmgp.uif2.actions.batch.MMGPBatchDisableAction">
+		<property name="model" ref="batchBillTableModel"></property>
+		<property name="operateCode" value="disable"></property>
+		<property name="resourceCode" ref="resourceCode" />
+		<property name="interceptor" ref="diableInterceptor"></property>
+	</bean>
+	<bean id="diableAction" parent="diableActionBase"></bean>
+	
+	<!-- 启用interceptor -->
+	<bean id="diableInterceptorBase"
+		class="nc.ui.pubapp.uif2app.actions.interceptor.CompositeActionInterceptor">
+		<property name="interceptors">
+			<list>
+				<ref bean="manageableInterceptor" />
+				<ref bean="checkActionEnableInOrgNode"/>
+			</list>
+		</property>
+	</bean>
+	<bean id="diableInterceptor" parent="diableInterceptorBase"></bean>
+
+	<bean id="filterAction" class="nc.funcnode.ui.action.MenuAction">
+		<property name="code" value="filter"></property>
+		<property name="name">
+			<bean class="nc.ui.uif2.I18nFB ">
+				<property name="resDir" value="common" />
+				<property name="defaultValue" value="过滤" />
+				<property name="resId" value="UCH069" />
+			</bean>
+		</property>
+		<property name="actions">
+			<list>
+				<ref bean="showSealAction" />
+			</list>
+		</property>
+	</bean>
+	<bean id="showSealAction" class="nc.ui.uif2.actions.ShowDisableDataAction">
+		<property name="model" ref="batchBillTableModel"></property>
+		<property name="dataManager" ref="modelDataManager"></property>
+	</bean>
+
+	<!-- 支持启用/停用 的DataManager控制类 -->
+	<bean id="needSealEnableMediator" class="nc.ui.mmgp.uif2.mediator.NeedSealEnableMediator">
+		<property name="needSeal" ref="modelDataManager"></property>
+	</bean>
+</beans>

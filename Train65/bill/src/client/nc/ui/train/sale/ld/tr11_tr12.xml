@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<!-- 转单参照单据信息 -->
+	<bean id="refInfo" class="nc.ui.pubapp.billref.src.RefInfo">
+		<property name="fakePKUsed" value="false" />
+		<property name="billVO">
+			<bean class="nc.vo.train.saleorderdemo.AggSaleOrder">
+			</bean>
+		</property>
+		<property name="headVO">
+			<bean class="nc.vo.train.saleorderdemo.SaleOrder">
+			</bean>
+		</property>
+		<property name="bodyVO">
+			<bean class="nc.vo.train.saleorderdemo.SaleOrderBody">
+			</bean>
+		</property>
+		<!--  
+		<property name="viewVO">
+			<bean class="nc.vo.mmpac.pmo.pac0002.entity.PMOViewVO">
+			</bean>
+		</property>
+		-->
+		<!--主子表单据模板 -->
+		<property name="billNodeKey" value="TR12" />
+		<!--单表单据模板 
+		<property name="billViewNodeKey" value="pmo4wrsingle" /> 
+        -->
+		<!-- 主键、单据号 -->
+		<property name="sourcevoPkName" value="billid" />
+		<property name="sourcevoBillNOName" value="vbillcode" />
+
+		<!-- 单据查询服务 -->
+		<property name="queryService">
+			<bean class="nc.ui.train.sale.ld.SaleSourceQueryService" />
+		</property>
+
+		<!-- 单据参照UI初始化处理器，可以处理精度，显示或其它
+		<property name="refPanelInit">
+			<bean class="nc.ui.mmpac.pmo.pac0002.pull.view.PMORefUIInit4Wr" />
+		</property>
+        -->
+        </bean>
+</beans>

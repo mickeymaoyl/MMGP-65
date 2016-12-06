@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<!-- 重写cardView， 添加审批面板 -->
+	<bean id="cardView" class="nc.ui.uif2.tangramlayout.node.HSNode">
+		<property name="left">
+			<bean class="nc.ui.uif2.tangramlayout.node.VSNode">
+				<property name="up">
+					<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+						<property name="component" ref="cardInfoPanel" />
+					</bean>
+				</property>
+				<property name="down">
+					<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+						<property name="name" value="卡片" />
+						<property name="component" ref="cardGrandPanel" />
+					</bean>
+				</property>
+				<property name="dividerLocation" value="30f" />
+			</bean>
+		</property>
+		<property name="right">
+			<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+				<property name="component" ref="multiBesideWidget"></property>
+			</bean>
+		</property>
+		<property name="dividerLocation" value="0.8f"></property>
+	</bean>
+
+	<!-- 审批面板 -->
+	<bean id="multiBesideWidgetBase" class="nc.ui.uif2.components.widget.MultiBesideWidget"
+		init-method="initUI">
+		<property name="besideWidgetInfoMap">
+			<map>
+				<entry>
+					<key>
+						<bean class="nc.ui.uif2.I18nFB">
+							<property name="resDir" value="uif2" />
+							<property name="resId" value="ActionRegistry-000055" />
+							<property name="defaultValue" value="审批" />
+						</bean>
+					</key>
+					<ref bean="approveWidgetList" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+	<bean id="multiBesideWidget" parent="multiBesideWidgetBase"></bean>
+
+	<bean id="approveWidgetList" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="besideApproveForm" />
+				<ref bean="besideHintMessageForm" />
+				<ref bean="besideHistoryForm" />
+			</list>
+		</constructor-arg>
+	</bean>
+
+	<bean id="modelAdaptor" class="nc.ui.mmgp.uif2.pf.beside.MMGPGrandModelAdaptor">
+		<property name="mainGrandModel" ref="mainGrandModel"></property>
+	</bean>
+
+	<!-- 审批区 -->
+	<bean id="besideApproveFormBase" class="nc.ui.mmgp.uif2.pf.beside.MMGPBesideApproveForm">
+		<property name="model" ref="modelAdaptor"></property>
+		<property name="besideapproveAction" ref="approveAction"></property>
+		<property name="besideunapproveaction" ref="unApproveAction"></property>
+		<property name="besidenextLineAction" ref="nextLineAction"></property>
+		<property name="showUpComonet" ref="cardGrandPanel"></property>
+	</bean>
+	<bean id="besideApproveForm" parent="besideApproveFormBase"></bean>
+
+	<!-- 信息提示区 -->
+	<bean id="besideHintMessageFormBase" class="nc.ui.mmgp.uif2.pf.beside.MMGPBesideHintMessageForm">
+		<property name="model" ref="modelAdaptor"></property>
+		<property name="showUpComonet" ref="cardGrandPanel"></property>
+	</bean>
+	<bean id="besideHintMessageForm" parent="besideHintMessageFormBase"></bean>
+
+	<!-- 审批历史区 -->
+	<bean id="besideHistoryFormBase" class="nc.ui.mmgp.uif2.pf.beside.MMGPBesideHistoryForm">
+		<property name="model" ref="modelAdaptor"></property>
+		<property name="showUpComonet" ref="cardGrandPanel"></property>
+	</bean>
+	<bean id="besideHistoryForm" parent="besideHistoryFormBase"></bean>
+</beans>

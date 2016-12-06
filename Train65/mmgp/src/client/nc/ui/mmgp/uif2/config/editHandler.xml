@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="gbk"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+  <!-- 事件监听 -->
+	<bean id="childrenPicky" class="nc.ui.pubapp.uif2app.event.ChildrenPicky">
+		<property name="billform" ref="billFormEditor" />
+		<property name="bodyVoClasses">
+			<list>
+				<value>nc.vo.train.saleorderdemo.SaleOrderBody</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="eventMediator" class="nc.ui.pubapp.uif2app.model.AppEventHandlerMediator">
+		<property name="model" ref="manageAppModel" />
+		<property name="handlerGroup">
+			<list>
+				<!-- 表体字段编辑前事件 
+				<bean class="nc.ui.pubapp.uif2app.event.EventHandlerGroup">
+					<property name="event"
+						value="nc.ui.pubapp.uif2app.event.card.CardBodyBeforeEditEvent" />
+					<property name="picky" ref="childrenPicky" />
+					<property name="handler">
+						<bean class="nc.ui.jz.gjrecord_131.ace.handler.AceBodyBeforeEditHandler" />
+					</property>
+				</bean>
+                -->
+				<!-- 表体字段编辑后事件 -->
+				<bean class="nc.ui.pubapp.uif2app.event.EventHandlerGroup">
+					<property name="event"
+						value="nc.ui.pubapp.uif2app.event.card.CardBodyAfterEditEvent" />
+					<property name="picky" ref="childrenPicky" />
+					<property name="handler">
+						<bean class="nc.ui.train.sale.handler.AceBodyAfterEditHandler" />
+					</property>
+				</bean>
+                 
+				<!-- 表头表尾字段编辑前事件 
+				<bean class="nc.ui.pubapp.uif2app.event.EventHandlerGroup">
+					<property name="event"
+						value="nc.ui.pubapp.uif2app.event.card.CardHeadTailBeforeEditEvent" />
+					<property name="handler">
+						<bean
+							class="nc.ui.jz.gjrecord_131.ace.handler.AceHeadTailBeforeEditHandler" />
+					</property>
+				</bean>
+                -->
+				<!-- 表头表尾字段编辑后事件
+				<bean class="nc.ui.pubapp.uif2app.event.EventHandlerGroup">
+					<property name="event"
+						value="nc.ui.pubapp.uif2app.event.card.CardHeadTailAfterEditEvent" />
+					<property name="handler">
+						<bean
+							class="nc.ui.jz.gjrecord_131.ace.handler.AceHeadTailAfterEditHandler" />
+					</property>
+				</bean>
+                -->
+
+
+			</list>
+		</property>
+	</bean>
+</beans>

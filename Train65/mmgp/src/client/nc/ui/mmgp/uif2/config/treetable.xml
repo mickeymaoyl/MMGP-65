@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<import
+		resource="classpath:/nc/ui/mmgp/uif2/config/enable/billmanage_batchenable2.xml" />
+	<import resource="classpath:/nc/ui/mmgp/uif2/config/billmanage_print.xml" />
+	<!--获值器 -->
+	<bean id="wbsComponentValueManager"
+		class="nc.ui.mmgp.uif2.view.treetable.value.MMGPBillCardPanelMetaDataFullValueAdapter" />
+	<!--BillCardPanel -->
+	<bean id="tempBillCardPanel"
+		class="nc.ui.mmgp.uif2.view.treetable.MMGPTreeTableBillCardPanel">
+		<property name="billScrollPane" ref="billScrollPane" />
+	</bean>
+	<!--BillScrollPane -->
+	<bean id="billScrollPane"
+		class="nc.ui.mmgp.uif2.view.treetable.MMGPTreeTableBillScrollPane">
+		<constructor-arg value="20" />
+		<constructor-arg value="30" />
+		<property name="tabletreefactory" ref="tabletreefactory" />
+	</bean>
+	<!--树表构造工厂 -->
+	<bean id="tabletreefactory" class="nc.ui.mmgp.uif2.view.treetable.MMGPTreeTableFactory">
+		<property name="comparator" ref="comparator" />
+	</bean>
+	<!--默认按照innercode从小到大排序 -->
+	<bean id="comparator"
+		class="nc.ui.mmgp.uif2.view.treetable.util.MMGPInnerCodeComparator" /><!-- 
+		移动按钮公共 <bean id="pubMoveAction" class="nc.ui.mmgp.uif2.actions.treetable.MMGPTreeBaseMoveAction"> 
+		<property name="editor" ref="billFormEditor" /> <property name="model" ref="manageAppModel" 
+		/> <property name="currBodyVO" ref="bodyVO" /> </bean> --><!--左移按钮 -->
+	<bean id="leftMoveAction"
+		class="nc.ui.mmgp.uif2.actions.treetable.MMGPTreeLeftMoveAction">
+		<property name="editor" ref="billFormEditor" />
+		<property name="model" ref="manageAppModel" />
+		<property name="currBodyVO" ref="bodyVO" />
+	</bean>
+	<!--右移按钮 -->
+	<bean id="rightMoveAction"
+		class="nc.ui.mmgp.uif2.actions.treetable.MMGPTreeRightMoveAction">
+		<property name="editor" ref="billFormEditor" />
+		<property name="model" ref="manageAppModel" />
+		<property name="currBodyVO" ref="bodyVO" />
+	</bean>
+	<!--上移按钮 -->
+	<bean id="upMoveAction" class="nc.ui.mmgp.uif2.actions.treetable.MMGPTreeUpMoveAction">
+		<property name="editor" ref="billFormEditor" />
+		<property name="model" ref="manageAppModel" />
+		<property name="currBodyVO" ref="bodyVO" />
+	</bean>
+	<!--下移按钮 -->
+	<bean id="downMoveAction"
+		class="nc.ui.mmgp.uif2.actions.treetable.MMGPTreeDownMoveAction">
+		<property name="editor" ref="billFormEditor" />
+		<property name="model" ref="manageAppModel" />
+		<property name="currBodyVO" ref="bodyVO" />
+	</bean>
+
+	<!-- 卡片界面 -->
+	<bean id="billFormEditorBase" class="nc.ui.mmgp.uif2.view.treetable.MMGPTreeTableForm"
+		init-method="initUI">
+		<property name="tempBillCardPanel" ref="tempBillCardPanel" />
+		<property name="model" ref="manageAppModel" />
+		<property name="templateContainer" ref="templateContainer" />
+		<property name="currBodyVO" ref="bodyVO" />
+		<property name="blankChildrenFilter">
+			<bean class="nc.ui.mmgp.uif2.view.value.MMGPDefaultBlankChilrenFilter"></bean>
+		</property>
+		<property name="componentValueManager" ref="wbsComponentValueManager" />
+		<property name="showTotalLine" value="false" />
+		<!-- 不许自动增行 -->
+		<property name="autoAddLine" value="false" />
+		<!-- 删行按钮 -->
+		<property name="bodyLineActions">
+			<list>
+				<bean class="nc.ui.mmgp.uif2.actions.treetable.MMGPTreeBodyAddLineAction"> 
+					<property name="currBodyVO" ref="bodyVO" />
+				</bean>
+				<bean class="nc.ui.mmgp.uif2.actions.treetable.MMGPTreeBodyInsertLineAction">
+				 	<property name="currBodyVO" ref="bodyVO" />
+				</bean>
+				<bean class="nc.ui.mmgp.uif2.actions.MMGPBodyDelLineAction" />
+				<ref bean="leftMoveAction" />
+				<ref bean="rightMoveAction" />
+				<ref bean="upMoveAction" />
+				<ref bean="downMoveAction" />
+			</list>
+		</property>
+		<property name="userdefitemPreparator">
+			<bean class=" nc.ui.mmgp.uif2.view.MMGPUserdefitemContainerPreparator">
+				<property name="templateContainer" ref="templateContainer" />
+				<property name="container" ref="userdefitemContainer" />
+				<property name="params">
+					<list>
+						<bean class="nc.ui.uif2.editor.UserdefQueryParam">
+							<property name="pos" value="0" />
+							<property name="prefix" value="vdef" />
+						</bean>
+					</list>
+				</property>
+			</bean>
+		</property>
+		<!-- 树策略 -->
+		<property name="billTreeCreateStrategy" ref="billTreeCreateStrategy" />
+	</bean>
+	<bean id="manageAppModel" parent="manageAppModelBase"
+		class="nc.ui.mmgp.uif2.model.MMGPTreeTableModel">
+		<property name="comparator" ref="comparator" />
+	</bean>
+
+
+	<bean id="manageModelService" parent="manageModelServiceBase">
+		<property name="manageServiceItf"
+			value="nc.itf.mmgp.uif2.IMMGPTreeTableOperateService"></property>
+	</bean>
+
+
+	<!-- 编辑事件 -->
+	<bean id="appEventHandlerMediator" class="nc.ui.pubapp.uif2app.model.AppEventHandlerMediator">
+		<property name="model" ref="manageAppModel" />
+		<property name="handlerMap">
+			<map>
+
+				<!-- 表体行编辑后事件 -->
+				<entry key="nc.ui.pubapp.uif2app.event.card.CardBodyAfterRowEditEvent">
+					<list>
+						<bean
+							class="nc.ui.mmgp.uif2.treetable.event.MMGPTreeTableBodyAfterRowEditHandler">
+						</bean>
+					</list>
+				</entry>
+
+			</map>
+		</property>
+	</bean>
+
+</beans>

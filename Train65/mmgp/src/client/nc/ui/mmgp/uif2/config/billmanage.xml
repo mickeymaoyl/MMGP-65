@@ -1,0 +1,590 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!-- 管理型（列表卡片）模板，支持主子表、多子表，单表头 -->
+<beans default-lazy-init="false">
+
+
+	<!-- 环境变量 -->
+	<bean id="context" class="nc.vo.uif2.LoginContext"></bean>
+
+	<!-- 对象转换器工厂，由此获取操作对象的特征信息 -->
+	<bean id="boAdatorFactory"
+		class="nc.ui.mmgp.uif2.meta.MMGPCommonVOMetaBDObjectAdapterFactory" />
+
+	<!-- ClosingListener -->
+	<bean id="ClosingListener" class="nc.ui.uif2.FunNodeClosingHandler">
+		<property name="model" ref="manageAppModel" />
+		<property name="saveaction" ref="saveAction" />
+		<property name="cancelaction" ref="cancelAction" />
+	</bean>
+
+	<bean id="InitDataListenerBase" class="nc.ui.uif2.model.DefaultFuncNodeInitDataListener">
+		<property name="datamanager" ref="modelDataManager"></property>
+		<property name="queryAction" ref="queryAction"></property>
+		<property name="editor" ref="listView"></property>
+		<property name="model" ref="manageAppModel"></property>
+		<property name="service" ref="pFAppModelService"></property>
+	</bean>
+
+	<bean id="InitDataListener" parent="InitDataListenerBase">
+	</bean>
+
+	<bean id="pFAppModelService" class=" nc.ui.mmgp.uif2.service.MMGPPFAppModelService">
+		<property name="context" ref="context" />
+	</bean>
+
+
+	<!-- 应用服务类，负责进行模型操作的处理 -->
+	<bean id="manageModelServiceBase" class="nc.ui.mmgp.uif2.service.MMGPDocModelService">
+		<!-- 修改为upm文件中配置的接口名称，前提是实现了IMMGPCmnOperateService接口 -->
+		<property name="manageServiceItf" value="nc.itf.mmgp.uif2.IMMGPCmnOperateService"></property>
+	</bean>
+
+	<bean id="manageModelService" parent="manageModelServiceBase" />
+
+	<!-- 管理应用模型 -->
+	<bean id="manageAppModelBase" class="nc.ui.mmgp.uif2.model.MMGPBillManageModel">
+		<property name="service" ref="manageModelService" />
+		<property name="businessObjectAdapterFactory" ref="boAdatorFactory" />
+		<property name="context" ref="context" />
+	</bean>
+	<!-- <bean id="showJSPanelMediator" class="nc.ui.mmgp.uif2.mediator.ShowJSPanelMediator"> -->
+	<!-- <property name="context" ref="context" /> -->
+	<!-- </bean> -->
+
+	<bean id="manageAppModel" parent="manageAppModelBase">
+	</bean>
+	<!-- lazy modify by wangweir 添加lazilyLoadSupporter设置 -->
+	<bean id="billLazilyLoader" class="nc.ui.mmgp.uif2.lazilyload.MMGPBillLazilyLoader" />
+	<bean id="LasilyLodadMediator" class="nc.ui.mmgp.uif2.lazilyload.MMGPLazilyLoadManager">
+		<property name="model" ref="manageAppModel" />
+		<property name="loader" ref="billLazilyLoader" />
+	</bean>
+
+	<!-- 数据模型管理器，主要负责各种方式的模型初始化 -->
+	<bean id="modelDataManagerBase" class="nc.ui.mmgp.uif2.model.MMGPBaseModelDataManager">
+		<property name="model" ref="manageAppModel" />
+	</bean>
+	<bean id="modelDataManager" parent="modelDataManagerBase">
+		<property name="needSeal" value="false" />
+	</bean>
+
+	<!-- 远程调用合并 -->
+	<bean id="remoteCallCombinatorCaller" class="nc.ui.mmgp.uif2.MMGPUIF2RemoteCallCombinatorCaller">
+	</bean>
+
+	<!-- 模板容器，负责对模板的统一装载 -->
+	<bean id="templateContainer" class="nc.ui.uif2.editor.TemplateContainer"
+		init-method="load">
+		<property name="context" ref="context" />
+	</bean>
+
+	<bean id="userdefitemContainer" class="nc.ui.mmgp.uif2.userdefitem.MMGPUserDefItemContainer">
+		<property name="context" ref="context" />
+		<property name="params">
+			<list>
+				<bean class="nc.ui.uif2.userdefitem.QueryParam" />
+			</list>
+		</property>
+	</bean>
+
+	<!-- 权限资源编码，需要权限控制的节点请设值,默认为空 -->
+	<bean id="resourceCode" class="java.lang.String">
+		<constructor-arg type="java.lang.String" value="" />
+	</bean>
+
+	<!--界面元素####################################### -->
+
+	<bean id="cardInfoPnlBase"
+		class="nc.ui.pubapp.uif2app.tangramlayout.UECardLayoutToolbarPanel">
+		<property name="actions">
+			<list>
+				<!-- 浏览按钮 -->
+				<bean id="firstLineAction" class="nc.ui.uif2.actions.FirstLineAction">
+					<property name="model" ref="manageAppModel" />
+				</bean>
+				<bean id="preLineAction" class="nc.ui.uif2.actions.PreLineAction">
+					<property name="model" ref="manageAppModel" />
+				</bean>
+				<ref bean="nextLineAction" />
+				<bean id="lastLineAction" class="nc.ui.uif2.actions.LastLineAction">
+					<property name="model" ref="manageAppModel" />
+				</bean>
+			</list>
+		</property>
+		<property name="titleAction">
+			<ref bean="returnAction" />
+		</property>
+		<property name="model" ref="manageAppModel"></property>
+	</bean>
+
+	<bean id="nextLineAction" class="nc.ui.uif2.actions.NextLineAction">
+		<property name="model" ref="manageAppModel" />
+	</bean>
+
+	<bean id="returnAction" class="nc.ui.mmgp.uif2.actions.MMGPUEReturnAction">
+		<property name="goComponent" ref="listView" />
+		<property name="model" ref="manageAppModel" />
+		<property name="saveAction" ref="saveAction" />
+	</bean>
+	<bean id="cardInfoPnl" parent="cardInfoPnlBase" />
+
+	<bean id="queryArea" class="nc.ui.pubapp.uif2app.tangramlayout.UEQueryAreaShell"
+		init-method="initUI">
+		<property name="queryArea">
+			<bean factory-bean="queryAction" factory-method="createQueryArea" />
+		</property>
+	</bean>
+
+	<bean id="listInfoPnl" class="nc.ui.uif2.tangramlayout.CardLayoutToolbarPanel">
+		<property name="model" ref="manageAppModel"></property>
+	</bean>
+	<!-- 列表视图 -->
+	<bean id="listViewBase" class="nc.ui.mmgp.uif2.view.MMGPShowUpableBillListView"
+		init-method="initUI">
+		<!-- <property name="north" ref="listInfoPnl" /> -->
+		<property name="model" ref="manageAppModel" />
+		<property name="templateContainer" ref="templateContainer" />
+		<property name="userdefitemListPreparator">
+			<bean class="nc.ui.mmgp.uif2.view.MMGPUserdefitemContainerListPreparator">
+				<property name="templateContainer" ref="templateContainer" />
+				<property name="container" ref="userdefitemContainer" />
+				<property name="params">
+					<list>
+						<bean class="nc.ui.uif2.editor.UserdefQueryParam">
+							<property name="pos" value="0" />
+							<property name="prefix" value="vdef" />
+						</bean>
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="listView" parent="listViewBase">
+	</bean>
+
+	<!--卡片视图 -->
+	<bean id="billFormEditorBase" class="nc.ui.mmgp.uif2.view.MMGPShowUpableBillForm"
+		init-method="initUI">
+		<property name="model" ref="manageAppModel" />
+		<property name="showTotalLine" value="false" />
+		<property name="templateContainer" ref="templateContainer" />
+		<property name="autoAddLine" value="true" />
+		<property name="blankChildrenFilter">
+			<bean class="nc.ui.mmgp.uif2.view.value.MMGPDefaultBlankChilrenFilter"></bean>
+		</property>
+		<property name="defaultValue" ref="defaultValue" />
+
+		<property name="bodyLineActions">
+			<list>
+				<bean class="nc.ui.mmgp.uif2.actions.MMGPBodyAddLineAction" />
+				<bean class="nc.ui.mmgp.uif2.actions.MMGPBodyInsertLineAction" />
+				<bean class="nc.ui.mmgp.uif2.actions.MMGPBodyCopyLineAction" />
+				<bean class="nc.ui.mmgp.uif2.actions.MMGPBodyPasteLineAction" />
+				<bean class="nc.ui.mmgp.uif2.actions.MMGPBodyDelLineAction" />
+				<bean class="nc.ui.mmgp.uif2.actions.MMGPBodyPasteToTailAction" />
+			</list>
+		</property>
+
+		<property name="userdefitemPreparator">
+			<bean class=" nc.ui.mmgp.uif2.view.MMGPUserdefitemContainerPreparator">
+				<property name="templateContainer" ref="templateContainer" />
+				<property name="container" ref="userdefitemContainer" />
+				<property name="params">
+					<list>
+						<bean class="nc.ui.uif2.editor.UserdefQueryParam">
+							<property name="pos" value="0" />
+							<property name="prefix" value="vdef" />
+						</bean>
+					</list>
+				</property>
+			</bean>
+		</property>
+
+	</bean>
+
+	<bean id="billFormEditor" parent="billFormEditorBase">
+	</bean>
+
+	<bean id="defaultValue" class="nc.ui.mmgp.uif2.view.value.MMGPDefaultValue">
+		<property name="context" ref="context" />
+	</bean>
+
+	<bean id="cardView" class="nc.ui.uif2.tangramlayout.node.VSNode">
+		<property name="up">
+			<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+				<property name="component" ref="cardInfoPnl" />
+			</bean>
+		</property>
+		<property name="down">
+			<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+				<property name="name" value="卡片" />
+				<property name="component" ref="billFormEditor" />
+			</bean>
+		</property>
+		<property name="dividerLocation" value="30f" />
+	</bean>
+
+	<bean id="listWithQueryArea" class="nc.ui.uif2.tangramlayout.node.HSNode">
+		<property name="left">
+			<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+				<property name="component" ref="queryArea" />
+			</bean>
+		</property>
+		<property name="right">
+			<bean class="nc.ui.uif2.tangramlayout.node.VSNode">
+				<property name="up">
+					<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+						<property name="component" ref="listInfoPnl"></property>
+					</bean>
+				</property>
+				<property name="down">
+					<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+						<property name="name" value="列表" />
+						<property name="component" ref="listView" />
+					</bean>
+				</property>
+				<property name="dividerLocation" value="30f" />
+			</bean>
+		</property>
+		<property name="dividerLocation">
+			<value>0.22f</value>
+		</property>
+	</bean>
+
+	<bean id="listWithOutQueryArea" class="nc.ui.uif2.tangramlayout.node.VSNode">
+		<property name="up">
+			<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+				<property name="component" ref="listInfoPnl"></property>
+			</bean>
+		</property>
+		<property name="down">
+			<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+				<property name="name" value="列表" />
+				<property name="component" ref="listView" />
+			</bean>
+		</property>
+		<property name="dividerLocation" value="30f" />
+	</bean>
+
+	<bean id="uiWithQueryArea" class="nc.ui.uif2.tangramlayout.node.TBNode">
+		<property name="showMode" value="CardLayout" />
+		<property name="tabs">
+			<list>
+				<ref bean="listWithQueryArea" />
+				<ref bean="cardView" />
+			</list>
+
+		</property>
+	</bean>
+	<bean id="uiWithOutQueryArea" class="nc.ui.uif2.tangramlayout.node.TBNode">
+		<property name="showMode" value="CardLayout" />
+		<property name="tabs">
+			<list>
+				<ref bean="listWithOutQueryArea" />
+				<ref bean="cardView" />
+			</list>
+		</property>
+	</bean>
+	<!-- 界面布局总装########################################################### -->
+	<bean id="containerbase" class="nc.ui.mmgp.uif2.container.MMGPTangramContainer"
+		init-method="initUI">
+		<property name="model" ref="manageAppModel" />
+		<property name="tangramLayoutRoot">
+			<ref bean="uiWithQueryArea" />
+		</property>
+
+		<!-- 此处配置的Action浏览态始终可见 -->
+		<property name="actions" ref="actions">
+		</property>
+		<property name="editActions" ref="editActions">
+		</property>
+		<property name="addActions" ref="initAddAction" />
+		<property name="insertActions" ref="initInsertAction" />
+		<property name="actionsOnDevelopMode">
+			<list>
+			</list>
+		</property>
+	</bean>
+	<bean id="container" parent="containerbase" />
+	<!-- 动态增加按钮 -->
+	<bean id="initInsertActionBase" class="nc.ui.mmgp.uif2.container.InsertActions">
+	</bean>
+	<bean id="initInsertAction" parent="initInsertActionBase">
+	</bean>
+	<bean id="initAddActionBase" class="nc.ui.mmgp.uif2.container.AddActions">
+	</bean>
+	<bean id="initAddAction" parent="initAddActionBase" />
+
+	<bean id="cardInsertActionsBase" class="nc.ui.mmgp.uif2.container.InsertActions">
+	</bean>
+	<bean id="cardInsertActions" parent="cardInsertActionsBase">
+	</bean>
+	<bean id="cardAddActionsBase" class="nc.ui.mmgp.uif2.container.AddActions">
+	</bean>
+	<bean id="cardAddActions" parent="cardAddActionsBase">
+	</bean>
+
+	<bean id="listInsertActionsBase" class="nc.ui.mmgp.uif2.container.InsertActions">
+	</bean>
+	<bean id="listInsertActions" parent="listInsertActionsBase">
+	</bean>
+	<bean id="listAddActionsBase" class="nc.ui.mmgp.uif2.container.AddActions">
+	</bean>
+	<bean id="listAddActions" parent="listAddActionsBase">
+	</bean>
+	<!--Actions配置 ########################################################### -->
+	<bean id="actions" class="nc.ui.mmgp.uif2.container.MMGPActionList">
+		<constructor-arg>
+			<list>
+				<ref bean="addAction" />
+				<ref bean="editAction" />
+				<ref bean="deleteAction" />
+				<ref bean="nullaction" />
+				<ref bean="queryAction" />
+				<ref bean="refreshAction" />
+			</list>
+		</constructor-arg>
+	</bean>
+	<bean id="editActions" class="nc.ui.mmgp.uif2.container.MMGPActionList">
+		<constructor-arg>
+			<list>
+				<ref bean="saveAction" />
+				<ref bean="saveAddAction" />
+				<ref bean="nullaction" />
+				<ref bean="cancelAction" />
+			</list>
+		</constructor-arg>
+	</bean>
+
+	<bean id="listActions" class="nc.ui.mmgp.uif2.container.MMGPActionList">
+		<constructor-arg>
+			<list>
+				<ref bean="nullaction" />
+				<ref bean="listPrintActionGroup" />
+			</list>
+		</constructor-arg>
+		<property name="addActions" ref="listAddActions" />
+		<property name="insertActions" ref="listInsertActions" />
+	</bean>
+	<bean id="cardActions" class="nc.ui.mmgp.uif2.container.MMGPActionList">
+		<constructor-arg>
+			<list>
+				<ref bean="nullaction" />
+				<ref bean="printActionGroup" />
+			</list>
+		</constructor-arg>
+		<property name="addActions" ref="cardAddActions" />
+		<property name="insertActions" ref="cardInsertActions" />
+	</bean>
+	<!-- list button and card button -->
+	<bean id="listActionsContainer" class="nc.ui.uif2.actions.StandAloneToftPanelActionContainer">
+		<constructor-arg>
+			<ref bean="listView" />
+		</constructor-arg>
+		<property name="actions" ref="listActions" />
+		<property name="model" ref="manageAppModel"></property>
+	</bean>
+
+	<bean id="cardActionsContainer" class="nc.ui.uif2.actions.StandAloneToftPanelActionContainer">
+		<constructor-arg>
+			<ref bean="billFormEditor" />
+		</constructor-arg>
+		<property name="actions" ref="cardActions" />
+		<property name="model" ref="manageAppModel"></property>
+	</bean>
+
+	<bean id="toftpanelActionContributors" class="nc.ui.uif2.actions.ActionContributors">
+		<property name="contributors">
+			<list>
+				<ref bean="listActionsContainer" />
+				<ref bean="cardActionsContainer" />
+			</list>
+		</property>
+	</bean>
+
+	<!-- 拦截器 -->
+	<!-- 显示列表的拦截器 -->
+	<bean id="showListInterceptor"
+		class="nc.ui.mmgp.uif2.actions.interceptor.MMGPShowUpComponentInterceptor">
+		<property name="showUpComponent" ref="listView" />
+	</bean>
+	<!-- 显示卡片的拦截器 -->
+	<bean id="showCardInterceptor"
+		class="nc.ui.mmgp.uif2.actions.interceptor.MMGPShowUpComponentInterceptor">
+		<property name="showUpComponent" ref="billFormEditor" />
+	</bean>
+
+	<!-- 各个Action -->
+	<bean id="addActionBase" class="nc.ui.mmgp.uif2.actions.MMGPAddAction">
+		<property name="model" ref="manageAppModel" />
+		<property name="interceptor" ref="showCardInterceptor" />
+	</bean>
+
+	<bean id="addAction" parent="addActionBase">
+	</bean>
+
+
+
+	<bean id="editActionBase" class="nc.ui.mmgp.uif2.actions.MMGPEditAction">
+		<property name="model" ref="manageAppModel" />
+		<property name="operateCode" value="edit" />
+		<property name="resourceCode" ref="resourceCode" />
+		<property name="interceptor" ref="showCardInterceptor" />
+	</bean>
+	<bean id="editAction" parent="editActionBase">
+	</bean>
+
+	<bean name="deleteActionBase" class="nc.ui.mmgp.uif2.actions.MMGPDeleteAction">
+		<property name="model" ref="manageAppModel" />
+		<property name="operateCode" value="delete" />
+		<property name="resourceCode" ref="resourceCode" />
+	</bean>
+
+	<bean id="deleteAction" parent="deleteActionBase">
+	</bean>
+
+	<bean name="refreshActionBase" class="nc.ui.mmgp.uif2.actions.MMGPRefreshAction">
+		<property name="model" ref="manageAppModel" />
+		<property name="dataManager" ref="modelDataManager" />
+		<property name="singleRefresh" ref="singleRefreshAction" />
+		<property name="editor" ref="billFormEditor" />
+	</bean>
+	<bean id="refreshAction" parent="refreshActionBase"></bean>
+
+	<bean id="singleRefreshActionBase" class="nc.ui.pubapp.uif2app.actions.RefreshSingleAction">
+		<property name="model" ref="manageAppModel"></property>
+	</bean>
+
+	<bean id="singleRefreshAction" parent="singleRefreshActionBase"></bean>
+
+	<bean id="nullaction" class="nc.funcnode.ui.action.SeparatorAction" />
+
+	<bean id="saveActionBase" class="nc.ui.mmgp.uif2.actions.MMGPSaveAction">
+		<property name="model" ref="manageAppModel" />
+		<property name="editor" ref="billFormEditor" />
+		<property name="validationService" ref="saveValidation" />
+	</bean>
+
+	<bean id="saveAction" parent="saveActionBase">
+	</bean>
+
+	<bean id="saveAddActionBase" class="nc.ui.mmgp.uif2.actions.MMGPSaveAddAction">
+		<property name="model" ref="manageAppModel"></property>
+		<property name="editor" ref="billFormEditor"></property>
+		<property name="addAction" ref="addAction"></property>
+		<property name="validationService" ref="saveValidation" />
+	</bean>
+
+	<bean id="saveAddAction" parent="saveAddActionBase">
+	</bean>
+
+	<bean name="saveValidationBase" class="nc.ui.mmgp.uif2.validation.MMGPNotNullValidation">
+		<property name="billForm" ref="billFormEditor" />
+	</bean>
+
+	<bean name="saveValidation" parent="saveValidationBase">
+	</bean>
+
+	<bean id="cancelActionBase" class="nc.ui.mmgp.uif2.actions.MMGPCancelAction">
+		<property name="model" ref="manageAppModel" />
+	</bean>
+	<bean id="cancelAction" parent="cancelActionBase">
+	</bean>
+
+	<!-- 查询按钮 -->
+	<bean name="queryActionBase" class="nc.ui.mmgp.uif2.actions.MMGPQueryAction">
+		<property name="model" ref="manageAppModel" />
+		<property name="dataManager" ref="modelDataManager" />
+		<property name="interceptor" ref="showListInterceptor" />
+	</bean>
+	<bean id="queryAction" parent="queryActionBase" />
+	<!-- 打印相关 -->
+	<bean id="listPrintActionGroup" class="nc.funcnode.ui.action.GroupAction">
+		<property name="code" value="PrintGroup"></property>
+		<property name="actions">
+			<list>
+				<ref bean="listTemplatePrint" />
+				<ref bean="listTemplatePreview" />
+				<ref bean="listOutputAction" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="listTemplatePreview" class="nc.ui.uif2.actions.TemplatePreviewAction">
+		<property name="model" ref="manageAppModel"></property>
+		<property name="printDlgParentConatiner" ref="listView"></property>
+		<property name="datasource" ref="allDatasource"></property>
+		<property name="nodeKey" value="list"></property>
+	</bean>
+	<bean id="listTemplatePrint" class="nc.ui.uif2.actions.TemplatePrintAction">
+		<property name="model" ref="manageAppModel"></property>
+		<property name="printDlgParentConatiner" ref="listView"></property>
+		<property name="datasource" ref="allDatasource"></property>
+		<property name="nodeKey" value="list"></property>
+	</bean>
+
+	<bean id="listOutputAction" class="nc.ui.uif2.actions.OutputAction">
+		<property name="model" ref="manageAppModel"></property>
+		<property name="printDlgParentConatiner" ref="listView"></property>
+		<property name="datasource" ref="allDatasource"></property>
+		<property name="nodeKey" value="list"></property>
+	</bean>
+
+	<bean id="printActionGroup" class="nc.funcnode.ui.action.GroupAction">
+		<property name="code" value="PrintGroup"></property>
+		<property name="actions">
+			<list>
+				<ref bean="templatePrint" />
+				<ref bean="templatePreview" />
+				<ref bean="outputAction" />
+			</list>
+		</property>
+	</bean>
+	<bean id="templatePreview" class="nc.ui.uif2.actions.TemplatePreviewAction">
+		<property name="model" ref="manageAppModel"></property>
+		<property name="printDlgParentConatiner" ref="billFormEditor"></property>
+		<property name="datasource" ref="cardDataSource"></property>
+		<property name="nodeKey" value="card"></property>
+	</bean>
+	<bean id="templatePrint" class="nc.ui.uif2.actions.TemplatePrintAction">
+		<property name="model" ref="manageAppModel"></property>
+		<property name="printDlgParentConatiner" ref="billFormEditor"></property>
+		<property name="datasource" ref="cardDataSource"></property>
+		<property name="nodeKey" value="card"></property>
+	</bean>
+	<bean id="outputAction" class="nc.ui.uif2.actions.OutputAction">
+		<property name="model" ref="manageAppModel"></property>
+		<property name="printDlgParentConatiner" ref="billFormEditor"></property>
+		<property name="datasource" ref="cardDataSource"></property>
+		<property name="nodeKey" value="card"></property>
+	</bean>
+
+	<bean id="allDatasource" class="nc.ui.mmgp.uif2.actions.print.MMGPMetaDataAllDataSource">
+		<property name="model" ref="manageAppModel"></property>
+	</bean>
+
+	<bean id="cardDataSource"
+		class="nc.ui.mmgp.uif2.actions.print.MMGPMetaDataSingleSelectDataSource">
+		<property name="model" ref="manageAppModel"></property>
+	</bean>
+
+
+	<!-- 组织切换设置参照组织过滤mediator -->
+	<bean id="orgChangeMediator"
+		class="nc.ui.mmgp.uif2.mediator.org.BillCardPanelEditorChangedMediator">
+		<property name="model" ref="manageAppModel"></property>
+		<property name="billCardPanelEditor" ref="billFormEditor"></property>
+	</bean>
+
+	<bean id="numScaleMediator"
+		class="nc.ui.mmgp.uif2.scale.mediator.MMGPDefaultNumScaleMediator">
+		<property name="editor" ref="billFormEditor"></property>
+		<property name="listView" ref="listView" />
+		<property name="context" ref="context" />
+	</bean>
+
+</beans>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="gb2312"?>
+<module name="MMGPEJB">
+	<public>
+		<component priority="0" singleton="true" remote="true" tx="CMT" supportAlias="false">
+			<interface>nc.itf.mmgp.IMmgpQueryService</interface>
+			<implementation>nc.impl.mmgp.MmgpQueryServiceImpl</implementation>
+		</component>
+		<component priority="0" singleton="true" remote="true" tx="CMT" supportAlias="false">
+			<interface>nc.itf.mmgp.IMmgpMaintainService</interface>
+			<implementation>nc.impl.mmgp.MmgpMaintainServiceImpl</implementation>
+		</component>
+		<component priority="0" singleton="true" remote="true" tx="CMT" supportAlias="false">
+			<interface>nc.itf.mmgp.uif2.IMMGPCmnOperateService</interface>
+			<implementation>nc.impl.mmgp.uif2.MMGPCmnOperateService</implementation>
+		</component>
+		<component priority="0" singleton="true" remote="true" tx="CMT" supportAlias="false">
+			<interface>nc.itf.mmgp.uif2.IMMGPCmnQueryService</interface>
+			<implementation>nc.impl.mmgp.uif2.MMGPCmnQueryService</implementation>
+		</component>
+		<component priority="0" singleton="true" remote="true" tx="CMT" supportAlias="false">
+			<interface>nc.itf.mmgp.uif2.IMMGPSmartService</interface>
+			<implementation>nc.impl.mmgp.uif2.MMGPSmartService</implementation>
+		</component>
+		<component priority="0" singleton="true" remote="true" tx="CMT" supportAlias="false">
+			<interface>nc.itf.mmgp.uif2.IMMGPCmnTreeService</interface>
+			<implementation>nc.impl.mmgp.uif2.MMGPCmnTreeService</implementation>
+		</component>
+		<!--主子孙查询-->
+		<component priority="0" singleton="true" remote="true" tx="CMT" supportAlias="false">
+			<interface>nc.itf.mmgp.uif2.IMMGPCmnGrandQueryService</interface>
+			<implementation>nc.impl.mmgp.uif2.MMGPCmnGrandQueryService</implementation>
+		</component>
+		<!--主子孙持久化（非动作脚本）-->
+		<component priority="0" singleton="true" remote="true" tx="CMT" supportAlias="false">
+			<interface>nc.itf.mmgp.uif2.IMMGPGrandOperateService</interface>
+			<implementation>nc.impl.mmgp.uif2.MMGPGrandOperateService</implementation>
+		</component>
+		<!--主子孙持久化（动作脚本）-->
+		<component priority="0" singleton="true" remote="true" tx="CMT" supportAlias="false">
+			<interface>nc.itf.mmgp.uif2.IMMGPPfGrandOperateService</interface>
+			<implementation>nc.impl.mmgp.uif2.MMGPPfGrandOperateService</implementation>
+		</component>
+		<!--主子孙联查接口-->
+		<component priority="0" singleton="true" remote="true" tx="CMT" supportAlias="false">
+			<interface>nc.itf.mmgp.IMMGPGrandQueryBillService</interface>
+			<implementation>nc.impl.mmgp.MMGPGrandQueryBillServiceImpl</implementation>
+		</component>
+		<!--主子表后台支持BP规则的接口-->
+		<component priority="0" singleton="true" remote="true" tx="CMT" supportAlias="false">
+			<interface>nc.itf.mmgp.uif2.IMMGPCmnOperateBPService</interface>
+			<implementation>nc.impl.mmgp.uif2.MMGPCmnOperateBPService</implementation>
+		</component>
+		<!-- 测试用例调用接口-->
+		<component priority="0" singleton="true" remote="true" tx="CMT" supportAlias="false">
+			<interface>nc.itf.mmgp.ITestCase</interface>
+			<implementation>nc.impl.mmgp.TestCaseImpl</implementation>
+		</component>
+		<!--李思远树表接口-->
+		<component priority="0" singleton="true" remote="true" tx="CMT" supportAlias="false">
+			<interface>nc.itf.mmgp.uif2.IMMGPTreeTableOperateService</interface>
+			<implementation>nc.impl.mmgp.uif2.treetable.MMGPTreeTableOperateServiceImpl</implementation>
+		</component>
+		<component priority="0" singleton="true" remote="true" tx="CMT" supportAlias="true">
+			<interface>nc.itf.mmgp.uif2.IMMGPBillTreeService</interface>
+			<implementation>nc.impl.mmgp.uif2.MMGPBillTreeService</implementation>
+		</component>
+		<component priority="0" singleton="true" remote="true" tx="CMT" supportAlias="true">
+			<interface>nc.itf.mmgp.linkquery.IMMGPLinkQueryService</interface>
+			<implementation>nc.impl.mmgp.linkquery.MMGPLinkQueryServiceImpl</implementation>
+		</component>
+		<component priority="0" singleton="true" remote="true" tx="CMT" supportAlias="true">
+			<interface>nc.itf.mmgp.IMmgpPfOperateService</interface>
+			<implementation>nc.impl.mmgp.MmgpCommonServiceImpl</implementation>
+		</component>
+	</public>
+</module>

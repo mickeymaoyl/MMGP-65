@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- 继承标准管理型配置文件 -->
+	<import resource="classpath:/nc/ui/mmgp/uif2/config/grandchildbill.xml" />
+	<import resource="grandchildbill_besidewidget.xml" />
+	<import resource="pf_maintainpower.xml"/>
+
+	<!-- 定义单据类型，在子配置文件中重新定义 -->
+	<bean id="billType" class="java.lang.String">
+		<constructor-arg type="java.lang.String" value="MMGP" />
+	</bean>
+
+	<bean id="defaultValueBase" class="nc.ui.mmgp.uif2.view.value.MMGPDefaultValue">
+		<property name="context" ref="context" />
+		<property name="billtype" ref="billType" />
+	</bean>
+
+	<bean id="defaultValue" parent="defaultValueBase" />
+
+	<!-- 保存，走脚本 -->
+	<bean id="saveActionBase" class="nc.ui.mmgp.uif2.actions.pflow.MMGPGrandSaveScriptAction">
+		<property name="model" ref="mainModel" />
+		<property name="mainGrandModel" ref="mainGrandModel"></property>
+		<property name="editor" ref="cardGrandPanel" />
+		<property name="billType" ref="billType" />
+		<property name="validationService" ref="saveValidation" />
+		<property name="exceptionHandler" ref="saveExceptionHandler" />
+	</bean>
+	<!-- 保存异常处理 -->
+	<bean id="saveExceptionHandler" class="nc.ui.pubapp.uif2app.DefaultExceptionHanler">
+		<constructor-arg ref="billFormEditor" />
+		<property name="context" ref="context" />
+	</bean>
+	<bean id="saveAction" parent="saveActionBase" />
+
+	<!-- 删除，走脚本 -->
+	<bean id="deleteActionBase"
+		class="nc.ui.mmgp.uif2.actions.pflow.MMGPGrandDeleteScriptAction">
+		<property name="model" ref="mainModel" />
+		<property name="mainGrandModel" ref="mainGrandModel"></property>
+		<property name="editor" ref="cardGrandPanel" />
+		<property name="billType" ref="billType" />
+		<property name="actionName" value="DELETE" />
+	</bean>
+	<bean id="deleteAction" parent="deleteActionBase" />
+
+	<!-- 提交 -->
+	<bean id="sendApproveActionBase"
+		class="nc.ui.mmgp.uif2.actions.pflow.MMGPGrandCommitScriptAction">
+		<property name="model" ref="mainModel" />
+		<property name="mainGrandModel" ref="mainGrandModel"></property>
+		<!-- 单据卡片 -->
+		<property name="editor" ref="cardGrandPanel" />
+		<!-- 是否需要在后台流程中补全vo，主要用于相关审批交验 -->
+		<property name="filledUpInFlow" value="true" />
+		<!--单据类型 -->
+		<property name="billType" ref="billType" />
+	</bean>
+	<bean id="sendApproveAction" parent="sendApproveActionBase" />
+
+	<!-- 保存即提交 -->
+	<bean id="saveAndCommitActionBase"
+		class="nc.ui.pubapp.uif2app.actions.pflow.SaveAndCommitScriptAction">
+		<constructor-arg index="0" ref="saveAction" />
+		<constructor-arg index="1" ref="sendApproveAction" />
+		<property name="model" ref="mainModel" />
+	</bean>
+	<bean id="saveAndCommitAction" parent="saveAndCommitActionBase" />
+
+	<!--收回 -->
+	<bean id="unsendApproveActionBase"
+		class="nc.ui.mmgp.uif2.actions.pflow.MMGPGrandUnCommitScriptAction">
+		<property name="model" ref="mainModel" />
+		<property name="mainGrandModel" ref="mainGrandModel"></property>
+		<property name="editor" ref="cardGrandPanel" />
+		<property name="filledUpInFlow" value="true" />
+		<property name="billType" ref="billType" />
+		<property name="actionName" value="UNSAVE" />
+	</bean>
+	<bean id="unsendApproveAction" parent="unsendApproveActionBase" />
+
+	<!-- 提交按钮组 -->
+	<bean id="sendActionGroup" class="nc.funcnode.ui.action.GroupAction">
+		<property name="actions">
+			<list>
+				<ref bean="sendApproveAction" />
+				<ref bean="unsendApproveAction" />
+			</list>
+		</property>
+	</bean>
+
+	<!-- 审批 -->
+	<bean id="approveActionBase"
+		class="nc.ui.mmgp.uif2.actions.pflow.MMGPGrandApproveScriptAction">
+		<property name="model" ref="mainModel" />
+		<property name="mainGrandModel" ref="mainGrandModel"></property>
+		<property name="editor" ref="cardGrandPanel" />
+		<property name="filledUpInFlow" value="true" />
+		<property name="billType" ref="billType" />
+	</bean>
+	<bean id="approveAction" parent="approveActionBase" />
+
+	<!--取消审批 -->
+	<bean id="unApproveActionBase"
+		class="nc.ui.mmgp.uif2.actions.pflow.MMGPGrandUnApproveScriptAction">
+		<property name="model" ref="mainModel" />
+		<property name="mainGrandModel" ref="mainGrandModel"></property>
+		<property name="editor" ref="cardGrandPanel" />
+		<property name="filledUpInFlow" value="true" />
+		<property name="billType" ref="billType" />
+	</bean>
+	<bean id="unApproveAction" parent="unApproveActionBase" />
+
+	<!--审批情况 -->
+	<bean id="approveInfoActionBase"
+		class="nc.ui.mmgp.uif2.actions.pflow.MMGPGrandPFApproveStatusInfoAction">
+		<property name="model" ref="mainModel" />
+		<property name="editor" ref="billFormEditor" />
+		<property name="billType" ref="billType" />
+	</bean>
+	<bean id="approveInfoAction" parent="approveInfoActionBase" />
+
+	<!-- 审批按钮组 -->
+	<bean id="approveActionGroup" class="nc.funcnode.ui.action.GroupAction">
+		<property name="actions">
+			<list>
+				<ref bean="approveAction" />
+				<ref bean="unApproveAction" />
+				<ref bean="separate" />
+				<ref bean="approveInfoAction" />
+			</list>
+		</property>
+	</bean>
+
+	<!-- 卡片界面编辑态按钮 -->
+	<bean id="editActionsOfCard" class="nc.ui.mmgp.uif2.container.MMGPActionList">
+		<constructor-arg>
+			<list>
+				<ref bean="saveAction" />
+				<!-- 保存提交 -->
+				<ref bean="saveAndCommitAction" />
+				<ref bean="separate" />
+				<ref bean="cancelAction" />
+			</list>
+		</constructor-arg>
+		<property name="addActions" ref="addCardEditActions" />
+		<property name="insertActions" ref="insertCardEditActions" />
+	</bean>
+
+	<!-- 增加相关按钮 -->
+	<bean id="addCardActions" parent="addCardActionsBase">
+		<property name="actions">
+			<list>
+				<!-- 审批流相关按钮 -->
+				<ref bean="separate" />
+				<ref bean="sendActionGroup" />
+				<ref bean="approveActionGroup" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="addListActions" parent="addListActionsBase">
+		<property name="actions">
+			<list>
+				<!-- 审批流相关按钮 -->
+				<ref bean="separate" />
+				<ref bean="sendActionGroup" />
+				<ref bean="approveActionGroup" />
+			</list>
+		</property>
+	</bean>
+
+	<!-- 单据号规则根据需求自行处理！！！ -->
+	<!-- 单据号规则如果是“支持断号补号”，则不管模板上设置的可编辑性，单据号都不允许修改 -->
+	<bean id="billCodeKey" class="java.lang.String">
+		<constructor-arg type="java.lang.String" value="vbillcode" />
+	</bean>
+	<bean id="billCodeMediator" class="nc.ui.pubapp.bill.BillCodeMediator"
+		init-method="initUI">
+		<!-- 模板上的单据号字段 -->
+		<property name="billCodeKey" ref="billCodeKey" />
+		<!-- 单据类型 -->
+		<property name="billType" ref="billType" />
+		<property name="billForm" ref="billFormEditor" />
+	</bean>
+
+	<!-- 行号自动处理 -->
+	<bean id="rowNoKey" class="java.lang.String">
+		<constructor-arg type="java.lang.String" value="vrowno" />
+	</bean>
+	<bean id="rowNoMediator" class="nc.ui.pubapp.uif2app.view.RowNoMediator">
+		<property name="model" ref="mainModel" />
+		<property name="editor" ref="billFormEditor" />
+		<property name="rowNoKey" ref="rowNoKey" />
+	</bean>
+
+</beans>
